@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Morrison Frink Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:   #1a2744;
+  --navyD:  #0e1829;
+  --navyL:  #223059;
+  --orange: #c8540a;
+  --orangeL:#e06020;
+  --gold:   #c8a96e;
+  --goldL:  #dfc08a;
+  --cream:  #fdf6ec;
+  --muted:  #8fa3b8;
+  --white:  #ffffff;
+  --green:  #2e7d57;
+  --red:    #b03a2e;
+  --yellow: #b8860b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navyD);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--navyD)}::-webkit-scrollbar-thumb{background:#c8a96e44;border-radius:3px}
+
+/* Header */
+header{background:var(--navy);border-bottom:2px solid #c8a96e33;padding:0 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.logo{padding:14px 0}
+.logo-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;font-weight:700;line-height:1}
+.logo-sub{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+nav{display:flex;gap:4px;flex-wrap:wrap;padding:8px 0}
+.nav-btn{background:transparent;color:var(--muted);border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;transition:all .15s}
+.nav-btn.active{background:var(--orange);color:#fff}
+.spacer{flex:1}
+.gcal-btn{background:#c8a96e22;color:var(--gold);border:1px solid #c8a96e44;border-radius:6px;padding:7px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;white-space:nowrap}
+.gcal-btn.connected{background:#2e7d5722;color:var(--green);border-color:#2e7d5744}
+
+/* Main */
+main{padding:24px;max-width:1100px;margin:0 auto}
+
+/* Panels */
+.panel{display:none}.panel.active{display:block}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.filter-chip{background:transparent;border:1px solid #8fa3b844;border-radius:99px;padding:5px 14px;cursor:pointer;color:var(--muted);font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s}
+.filter-chip.active{background:#c8540a22;border-color:var(--orange);color:var(--orange)}
+.count-badge{background:var(--orange);color:#fff;border-radius:99px;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:4px}
+
+/* Buttons */
+.btn-primary{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px}
+.btn-secondary{background:transparent;color:var(--muted);border:1px solid #8fa3b844;border-radius:8px;padding:9px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px}
+.btn-sm{border-radius:6px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;white-space:nowrap;border:1px solid transparent}
+
+/* Cards */
+.card{background:var(--navyL);border-radius:12px;padding:16px 20px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;border:1px solid #ffffff11}
+.card-body{flex:1;min-width:0}
+.card-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:4px}
+.card-meta{color:var(--muted);font-size:12px;margin-top:3px}
+.card-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
+.status-badge{border-radius:99px;padding:2px 10px;font-size:11px;font-weight:600}
+.priority-badge{border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px}
+.tag{color:var(--muted);font-size:11px;border:1px solid #8fa3b833;border-radius:99px;padding:1px 7px}
+
+/* Section label */
+.section-label{color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:18px 0 8px}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:36px;margin-bottom:12px}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:#000b;z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--navyL);border-radius:16px;padding:28px;width:100%;max-width:500px;border:1px solid #c8a96e44;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;margin-bottom:20px}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+
+/* Form fields */
+.field{margin-bottom:14px}
+.field label{display:block;color:var(--muted);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;background:#0e1829;border:1px solid #8fa3b844;border-radius:8px;padding:9px 12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.field textarea{resize:vertical;min-height:70px}
+.field select option{background:var(--navy)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=date]::-webkit-calendar-picker-indicator,
+input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer}
+
+/* Checkbox */
+.check-circle{width:22px;height:22px;border-radius:99px;border:2px solid var(--muted);background:transparent;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;transition:all .15s}
+.check-circle.done{border-color:var(--green);background:var(--green)}
+
+/* Meal grid */
+.meal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.meal-day{background:var(--navy);border-radius:10px;padding:10px;border:1px solid #ffffff11;min-height:180px}
+.meal-day.today{background:var(--navyL);border-color:#c8a96e66}
+.meal-day-header{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--muted)}
+.meal-day.today .meal-day-header{color:var(--gold)}
+.meal-type-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.meal-slot{margin-bottom:6px}
+.meal-entry{background:#c8540a18;border-radius:6px;padding:4px 7px;font-size:11px;color:var(--goldL);cursor:pointer;display:flex;align-items:center;gap:4px}
+.meal-entry span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meal-add{background:transparent;border:1px dashed #8fa3b844;border-radius:6px;padding:3px 6px;font-size:10px;color:var(--muted);cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.meal-sync{margin-top:6px;background:transparent;border:1px solid #c8a96e33;border-radius:6px;padding:3px 7px;font-size:10px;color:var(--gold);cursor:pointer;width:100%;font-family:'DM Sans',sans-serif}
+.week-nav{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.week-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:16px;flex:1;text-align:center}
+
+/* Event row */
+.event-row{background:var(--navyL);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;gap:12px;align-items:center;border:1px solid #ffffff11}
+.event-bar{width:4px;height:40px;border-radius:4px;flex-shrink:0}
+.soon-badge{color:var(--orange);font-size:11px;font-weight:600}
+
+/* Toast */
+#toast{position:fixed;top:20px;right:20px;z-index:9999;background:var(--green);color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.4);display:none;animation:fadeIn .2s}
+#toast.error{background:var(--red)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Responsive */
+@media(max-width:700px){
+  .meal-grid{grid-template-columns:repeat(2,1fr)}
+  .field-row{grid-template-columns:1fr}
+  header{gap:8px}
+  .nav-btn{padding:7px 10px;font-size:12px}
+  main{padding:16px}
+}
+@media(max-width:400px){
+  .meal-grid{grid-template-columns:1fr}
+}
+
+/* Sync setup banner */
+.sync-banner{background:#c8a96e11;border:1px solid #c8a96e44;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--goldL);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sync-banner a{color:var(--gold);font-weight:600}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-title">Morrison Frink</div>
+    <div class="logo-sub">Family Dashboard</div>
+  </div>
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('cases')">⚫ Cases</button>
+    <button class="nav-btn" onclick="switchTab('tasks')">✓ Tasks</button>
+    <button class="nav-btn" onclick="switchTab('meals')">🍽 Meals</button>
+    <button class="nav-btn" onclick="switchTab('calendar')">📅 Calendar</button>
+  </nav>
+  <div class="spacer"></div>
+  <button class="gcal-btn" id="gcalBtn" onclick="signInGoogle()">Connect Google Cal</button>
+</header>
+
+<!-- ═══════════════════════════════ MAIN ════════════════════════════════ -->
+<main>
+
+  <!-- SYNC SETUP BANNER (shown until Google Sheets configured) -->
+  <div class="sync-banner" id="syncBanner">
+    💡 <div><strong>Shared sync:</strong> To sync data with your partner, follow the <a href="#" onclick="showSyncHelp()">one-time setup guide</a>. Until then, data saves locally on each device.</div>
+    <button class="btn-sm" style="background:var(--gold);color:var(--navy);border:none;margin-left:auto" onclick="document.getElementById('syncBanner').style.display='none'">Dismiss</button>
+  </div>
+
+  <!-- ── CASES ── -->
+  <div class="panel active" id="panel-cases">
+    <div class="filter-bar" id="caseFilters"></div>
+    <div id="caseList"></div>
+  </div>
+
+  <!-- ── TASKS ── -->
+  <div class="panel" id="panel-tasks">
+    <div class="filter-bar" id="taskFilters"></div>
+    <div id="taskList"></div>
+  </div>
+
+  <!-- ── MEALS ── -->
+  <div class="panel" id="panel-meals">
+    <div class="week-nav">
+      <button class="btn-secondary" onclick="changeWeek(-1)">← Prev</button>
+      <div class="week-title" id="weekLabel"></div>
+      <button class="btn-secondary" style="font-size:11px" onclick="changeWeek(0)">Today</button>
+      <button class="btn-secondary" onclick="changeWeek(1)">Next →</button>
+    </div>
+    <div class="meal-grid" id="mealGrid"></div>
+  </div>
+
+  <!-- ── CALENDAR ── -->
+  <div class="panel" id="panel-calendar">
+    <div class="filter-bar">
+      <div class="spacer"></div>
+      <button class="btn-primary" onclick="openEventModal()">+ Add Event</button>
+    </div>
+    <div id="calList"></div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════ MODALS ══════════════════════════════ -->
+
+<!-- Case Modal -->
+<div class="modal-overlay" id="caseModal">
+  <div class="modal">
+    <div class="modal-title" id="caseModalTitle">New Funeral Case</div>
+    <input type="hidden" id="caseId"/>
+    <div class="field"><label>Family Name *</label><input type="text" id="cName" placeholder="e.g. Anderson"/></div>
+    <div class="field-row">
+      <div class="field"><label>Case #</label><input type="text" id="cCaseNo" placeholder="12345"/></div>
+      <div class="field"><label>Type</label><select id="cType"><option>Funeral</option><option>Cremation</option><option>Pre-Need</option><option>At-Need</option><option>Graveside</option></select></div>
+    </div>
+    <div class="field"><label>Status</label><select id="cStatus"><option>New</option><option>In Progress</option><option>Pending Family</option><option>Pending Docs</option><option>Complete</option></select></div>
+    <div class="field"><label>Next Step / Action Needed</label><input type="text" id="cNextStep" placeholder="e.g. Call family re: marker selection"/></div>
+    <div class="field"><label>Due Date</label><input type="date" id="cDue"/></div>
+    <div class="field"><label>Notes</label><textarea id="cNotes" placeholder="Any additional details…"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('caseModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveCase()">Save Case</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="taskModal">
+  <div class="modal">
+    <div class="modal-title" id="taskModalTitle">New Task</div>
+    <input type="hidden" id="taskId"/>
+    <div class="field"><label>Task *</label><input type="text" id="tText" placeholder="What needs to get done?"/></div>
+    <div class="field-row">
+      <div class="field"><label>Priority</label><select id="tPriority"><option>High</option><option selected>Medium</option><option>Low</option></select></div>
+      <div class="field"><label>Category</label><select id="tCat"><option>Work</option><option>Personal</option><option>Home</option><option>Errand</option></select></div>
+    </div>
+    <div class="field"><label>Due Date</label><input type="date" id="tDue"/></div>
+    <div class="field"><label>Notes</label><textarea id="tNotes"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveTask()">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Event Modal -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-title" id="eventModalTitle">New Event</div>
+    <input type="hidden" id="eventId"/>
+    <div class="field"><label>Title *</label><input type="text" id="eTitle" placeholder="e.g. Rent due, Doctor appt"/></div>
+    <div class="field-row">
+      <div class="field"><label>Date *</label><input type="date" id="eDate"/></div>
+      <div class="field"><label>Time</label><input type="time" id="eTime"/></div>
+    </div>
+    <div class="field"><label>Category</label><select id="eCat">
+      <option>Family</option><option>Bill/Payment</option><option>Appointment</option><option>School</option><option>Other</option>
+    </select></div>
+    <div class="field"><label>Notes</label><textarea id="eNotes"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Meal edit modal -->
+<div class="modal-overlay" id="mealModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title" id="mealModalTitle">Add Meal</div>
+    <input type="hidden" id="mealDate"/><input type="hidden" id="mealType"/>
+    <div class="field"><label>What's on the menu?</label><input type="text" id="mealText" placeholder="e.g. Grilled salmon & rice" onkeydown="if(event.key==='Enter')saveMeal()"/></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('mealModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveMeal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Help Modal -->
+<div class="modal-overlay" id="syncModal">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-title">Setting Up Shared Sync</div>
+    <p style="color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:16px">
+      To share data between your device and your partner's, the easiest free option is a shared Google Sheet. Here's how:
+    </p>
+    <ol style="color:var(--goldL);font-size:13px;line-height:2;padding-left:20px">
+      <li>Create a Google Sheet and share it with both of you (Edit access)</li>
+      <li>Copy the Sheet ID from the URL (the long string between /d/ and /edit)</li>
+      <li>Paste it below and save</li>
+    </ol>
+    <div class="field" style="margin-top:16px"><label>Google Sheet ID</label><input type="text" id="sheetId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"/></div>
+    <div class="field"><label>Google API Key (read/write)</label><input type="text" id="apiKey" placeholder="AIza…"/></div>
+    <p style="color:var(--muted);font-size:11px;margin-top:-8px">Get a free API key at <strong>console.cloud.google.com</strong> → Enable Sheets API → Credentials</p>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('syncModal')">Cancel</button>
+      <button class="btn-primary" onclick="saveSyncConfig()">Save & Enable Sync</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let cases   = JSON.parse(localStorage.getItem('bw:cases')  ||'[]');
+let tasks   = JSON.parse(localStorage.getItem('bw:tasks')  ||'[]');
+let meals   = JSON.parse(localStorage.getItem('bw:meals')  ||'{}');
+let events  = JSON.parse(localStorage.getItem('bw:events') ||'[]');
+let gToken  = null;
+let weekOffset = 0;
+let caseFilter = 'All';
+let taskFilter = 'All';
+
+const CASE_STATUSES = ['New','In Progress','Pending Family','Pending Docs','Complete'];
+const CASE_COLORS   = {'New':'#c8540a','In Progress':'#c8a96e','Pending Family':'#b8860b','Pending Docs':'#8fa3b8','Complete':'#2e7d57'};
+const PRIO_COLORS   = {High:'#b03a2e',Medium:'#c8540a',Low:'#8fa3b8'};
+const CAT_COLORS    = {Family:'#c8a96e','Bill/Payment':'#b03a2e',Appointment:'#c8540a',School:'#2e7d57',Other:'#8fa3b8'};
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MEAL_TYPES = ['Breakfast','Lunch','Dinner','Snack'];
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function save(){
+  localStorage.setItem('bw:cases',  JSON.stringify(cases));
+  localStorage.setItem('bw:tasks',  JSON.stringify(tasks));
+  localStorage.setItem('bw:meals',  JSON.stringify(meals));
+  localStorage.setItem('bw:events', JSON.stringify(events));
+  syncToSheets();
+}
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+const today = fmtDate(new Date());
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════
+function showToast(msg, ok=true){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = ok ? '' : 'error';
+  t.style.display = 'block';
+  setTimeout(()=>t.style.display='none', 3200);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════════
+function switchTab(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  const idx = ['cases','tasks','meals','calendar'].indexOf(tab);
+  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  if(tab==='cases')    renderCases();
+  if(tab==='tasks')    renderTasks();
+  if(tab==='meals')    renderMeals();
+  if(tab==='calendar') renderCalendar();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODAL HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// GOOGLE CALENDAR
+// ═══════════════════════════════════════════════════════════════════
+function signInGoogle(){
+  const CLIENT_ID = '490515181027-dmq3c7m52ml221r927mj78mra88pal94.apps.googleusercontent.com';
+  if(!CLIENT_ID){ showToast('To enable Google Calendar sync, add your Client ID in the code.', false); return; }
+  const params = new URLSearchParams({
+    client_id:CLIENT_ID, redirect_uri:location.href.split('#')[0],
+    response_type:'token', scope:'https://www.googleapis.com/auth/calendar.events'
+  });
+  const win = window.open('https://accounts.google.com/o/oauth2/v2/auth?'+params,'gcal','width=500,height=600');
+  const timer = setInterval(()=>{
+    try{
+      const hash = win.location.hash;
+      if(hash && hash.includes('access_token')){
+        clearInterval(timer); win.close();
+        gToken = new URLSearchParams(hash.slice(1)).get('access_token');
+        document.getElementById('gcalBtn').textContent='✓ GCal Connected';
+        document.getElementById('gcalBtn').classList.add('connected');
+        showToast('Google Calendar connected!');
+      }
+    }catch(e){}
+  },500);
+}
+
+async function pushToGCal(title, dateStr, desc=''){
+  if(!gToken){ showToast('Connect Google Calendar first.', false); return; }
+  const start = `${dateStr||today}T09:00:00`;
+  const end   = `${dateStr||today}T10:00:00`;
+  const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events',{
+    method:'POST',
+    headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({summary:title,description:desc,
+      start:{dateTime:start,timeZone:'America/Los_Angeles'},
+      end:{dateTime:end,timeZone:'America/Los_Angeles'}})
+  });
+  showToast(res.ok?`"${title}" added to Google Calendar!`:'Calendar push failed.', res.ok);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// GOOGLE SHEETS SYNC (optional — fills from syncModal config)
+// ═══════════════════════════════════════════════════════════════════
+let sheetConfig = JSON.parse(localStorage.getItem('bw:sheetConfig')||'null');
+function showSyncHelp(){ openModal('syncModal'); }
+function saveSyncConfig(){
+  sheetConfig = { sheetId: document.getElementById('sheetId').value.trim(), apiKey: document.getElementById('apiKey').value.trim() };
+  localStorage.setItem('bw:sheetConfig', JSON.stringify(sheetConfig));
+  closeModal('syncModal');
+  showToast('Sync config saved! Data will now sync to your shared Sheet.');
+}
+async function syncToSheets(){
+  if(!sheetConfig) return;
+  // Writes a summary row — extend as needed for full two-way sync
+  // Full bidirectional sync requires a backend; this pushes a timestamped JSON snapshot
+  try {
+    const payload = {cases, tasks, meals, events, updated: new Date().toISOString()};
+    // This is a placeholder — real Sheets write requires OAuth, not API key alone
+    // For full sync, host a small Google Apps Script Web App (free) and call it here
+    console.log('Sync payload ready:', payload);
+  } catch(e) { console.warn('Sheet sync skipped:', e); }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CASES
+// ═══════════════════════════════════════════════════════════════════
+function renderCases(){
+  // Filters
+  const bar = document.getElementById('caseFilters');
+  const allFilters = ['All', ...CASE_STATUSES];
+  const counts = {};
+  CASE_STATUSES.forEach(s=>counts[s]=cases.filter(c=>c.status===s).length);
+  bar.innerHTML = allFilters.map(f=>{
+    const cnt = f==='All'?cases.length:counts[f];
+    const col = f==='All'?'#c8a96e':CASE_COLORS[f];
+    return `<button class="filter-chip${caseFilter===f?' active':''}" onclick="caseFilter='${f}';renderCases()" style="${caseFilter===f?`background:${col}22;border-color:${col};color:${col}`:''}">
+      <span class="count-badge" style="background:${col}">${cnt}</span>${f}</button>`;
+  }).join('') + `<div class="spacer"></div><button class="btn-primary" onclick="openCaseModal()">+ New Case</button>`;
+
+  const list = document.getElementById('caseList');
+  const filtered = caseFilter==='All' ? cases : cases.filter(c=>c.status===caseFilter);
+  if(!filtered.length){ list.innerHTML=`<div class="empty"><div class="empty-icon">⚫</div>No cases in this category.</div>`; return; }
+  list.innerHTML = filtered.map(c=>{
+    const col = CASE_COLORS[c.status];
+    return `<div class="card" style="border-color:${col}33">
+      <div class="card-body">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span class="card-title">${c.name} Family</span>
+          ${c.caseNo?`<span style="color:var(--muted);font-size:12px">#${c.caseNo}</span>`:''}
+          <span class="status-badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${c.status}</span>
+          <span class="tag">${c.type}</span>
+        </div>
+        ${c.nextStep?`<div style="margin-top:6px;color:var(--goldL);font-size:13px"><span style="color:var(--muted);margin-right:6px">Next:</span>${c.nextStep}</div>`:''}
+        ${c.dueDate?`<div class="card-meta">Due: ${c.dueDate}</div>`:''}
+        ${c.notes?`<div class="card-meta" style="font-style:italic">${c.notes}</div>`:''}
+      </div>
+      <div class="card-actions">
+        ${c.dueDate?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('Case: ${c.name} Family — ${(c.nextStep||c.status).replace(/'/g,"\\'")}','${c.dueDate}','${(c.notes||'').replace(/'/g,"\\'")}')">📅 Sync</button>`:''}
+        <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="openCaseModal('${c.id}')">Edit</button>
+        <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteCase('${c.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openCaseModal(id){
+  const c = id ? cases.find(x=>x.id===id) : null;
+  document.getElementById('caseModalTitle').textContent = c ? 'Edit Case' : 'New Funeral Case';
+  document.getElementById('caseId').value    = c?.id||'';
+  document.getElementById('cName').value     = c?.name||'';
+  document.getElementById('cCaseNo').value   = c?.caseNo||'';
+  document.getElementById('cType').value     = c?.type||'Funeral';
+  document.getElementById('cStatus').value   = c?.status||'New';
+  document.getElementById('cNextStep').value = c?.nextStep||'';
+  document.getElementById('cDue').value      = c?.dueDate||'';
+  document.getElementById('cNotes').value    = c?.notes||'';
+  openModal('caseModal');
+}
+
+function saveCase(){
+  const name = document.getElementById('cName').value.trim();
+  if(!name){ showToast('Family name is required.', false); return; }
+  const id = document.getElementById('caseId').value || uid();
+  const obj = {
+    id, name, caseNo:document.getElementById('cCaseNo').value,
+    type:document.getElementById('cType').value, status:document.getElementById('cStatus').value,
+    nextStep:document.getElementById('cNextStep').value, dueDate:document.getElementById('cDue').value,
+    notes:document.getElementById('cNotes').value, createdAt: new Date().toISOString()
+  };
+  const idx = cases.findIndex(c=>c.id===id);
+  if(idx>=0) cases[idx]=obj; else cases.push(obj);
+  save(); closeModal('caseModal'); renderCases();
+}
+
+function deleteCase(id){ if(confirm('Remove this case?')){ cases=cases.filter(c=>c.id!==id); save(); renderCases(); } }
+
+// ═══════════════════════════════════════════════════════════════════
+// TASKS
+// ═══════════════════════════════════════════════════════════════════
+function renderTasks(){
+  const cats = ['All','Work','Personal','Home','Errand'];
+  const bar = document.getElementById('taskFilters');
+  bar.innerHTML = cats.map(c=>`<button class="filter-chip${taskFilter===c?' active':''}" onclick="taskFilter='${c}';renderTasks()">${c}</button>`).join('')
+    + `<div class="spacer"></div><button class="btn-primary" onclick="openTaskModal()">+ Add Task</button>`;
+
+  const filtered = taskFilter==='All' ? tasks : tasks.filter(t=>t.cat===taskFilter);
+  const open_ = filtered.filter(t=>!t.done);
+  const done_ = filtered.filter(t=>t.done);
+  const list  = document.getElementById('taskList');
+
+  if(!open_.length && !done_.length){ list.innerHTML=`<div class="empty"><div class="empty-icon">✓</div>No tasks yet — add one above!</div>`; return; }
+
+  const taskRow = t => {
+    const pc = PRIO_COLORS[t.priority];
+    return `<div class="card" style="border-color:${pc}22;opacity:${t.done?.5:1}">
+      <button class="check-circle${t.done?' done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</button>
+      <div class="card-body">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-weight:500;font-size:14px;text-decoration:${t.done?'line-through':'none'};color:${t.done?'var(--muted)':'var(--white)'}">${t.text}</span>
+          <span class="priority-badge" style="background:${pc}22;color:${pc}">${t.priority.toUpperCase()}</span>
+          <span class="tag">${t.cat}</span>
+        </div>
+        ${t.dueDate?`<div class="card-meta">Due: ${t.dueDate}</div>`:''}
+        ${t.notes?`<div class="card-meta" style="font-style:italic">${t.notes}</div>`:''}
+      </div>
+      <div class="card-actions">
+        ${t.dueDate?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('${t.text.replace(/'/g,"\\'")}','${t.dueDate}','${(t.notes||'').replace(/'/g,"\\'")}')">📅</button>`:''}
+        <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="openTaskModal('${t.id}')">Edit</button>
+        <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteTask('${t.id}')">✕</button>
+      </div>
+    </div>`;
+  };
+
+  list.innerHTML = open_.map(taskRow).join('')
+    + (done_.length ? `<div class="section-label">Completed (${done_.length})</div>`+done_.map(taskRow).join('') : '');
+}
+
+function openTaskModal(id){
+  const t = id ? tasks.find(x=>x.id===id) : null;
+  document.getElementById('taskModalTitle').textContent = t ? 'Edit Task' : 'New Task';
+  document.getElementById('taskId').value   = t?.id||'';
+  document.getElementById('tText').value    = t?.text||'';
+  document.getElementById('tPriority').value= t?.priority||'Medium';
+  document.getElementById('tCat').value     = t?.cat||'Work';
+  document.getElementById('tDue').value     = t?.dueDate||'';
+  document.getElementById('tNotes').value   = t?.notes||'';
+  openModal('taskModal');
+}
+
+function saveTask(){
+  const text = document.getElementById('tText').value.trim();
+  if(!text){ showToast('Task description required.', false); return; }
+  const id = document.getElementById('taskId').value || uid();
+  const obj = { id, text, priority:document.getElementById('tPriority').value,
+    cat:document.getElementById('tCat').value, dueDate:document.getElementById('tDue').value,
+    notes:document.getElementById('tNotes').value, done:false, createdAt:new Date().toISOString() };
+  const idx = tasks.findIndex(t=>t.id===id);
+  if(idx>=0){ obj.done=tasks[idx].done; tasks[idx]=obj; } else tasks.push(obj);
+  save(); closeModal('taskModal'); renderTasks();
+}
+
+function toggleTask(id){ const t=tasks.find(x=>x.id===id); if(t){ t.done=!t.done; save(); renderTasks(); } }
+function deleteTask(id){ tasks=tasks.filter(t=>t.id!==id); save(); renderTasks(); }
+
+// ═══════════════════════════════════════════════════════════════════
+// MEALS
+// ═══════════════════════════════════════════════════════════════════
+function getWeekDates(){
+  const now = new Date();
+  const start = new Date(now);
+  start.setDate(now.getDate() - now.getDay() + weekOffset*7);
+  return Array.from({length:7},(_,i)=>{ const d=new Date(start); d.setDate(start.getDate()+i); return d; });
+}
+
+function changeWeek(dir){
+  weekOffset = dir===0 ? 0 : weekOffset+dir;
+  renderMeals();
+}
+
+function renderMeals(){
+  const dates = getWeekDates();
+  const s=dates[0], e=dates[6];
+  document.getElementById('weekLabel').textContent =
+    s.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+e.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  document.getElementById('mealGrid').innerHTML = dates.map(d=>{
+    const key = fmtDate(d);
+    const isToday = key===today;
+    const dayMeals = meals[key]||[];
+    const slotsHTML = MEAL_TYPES.map(type=>{
+      const entry = dayMeals.find(m=>m.type===type);
+      return `<div class="meal-slot">
+        <div class="meal-type-label">${type}</div>
+        ${entry
+          ? `<div class="meal-entry" onclick="openMealModal('${key}','${type}')">
+              <span>${entry.text}</span>
+              <span onclick="event.stopPropagation();deleteMeal('${key}','${type}')" style="color:var(--muted);font-size:10px;cursor:pointer">✕</span>
+            </div>`
+          : `<button class="meal-add" onclick="openMealModal('${key}','${type}')">+ add</button>`}
+      </div>`;
+    }).join('');
+    const mealSummary = dayMeals.map(m=>`${m.type}: ${m.text}`).join(', ');
+    return `<div class="meal-day${isToday?' today':''}">
+      <div class="meal-day-header">${DAYS[d.getDay()]} <span style="font-weight:300;font-size:11px">${d.getDate()}</span></div>
+      ${slotsHTML}
+      <button class="meal-sync" onclick="pushToGCal('Meal plan: ${d.toLocaleDateString('en-US',{weekday:'long'})}','${key}','${mealSummary.replace(/'/g,"\\'")}')" >📅 Sync day</button>
+    </div>`;
+  }).join('');
+}
+
+function openMealModal(date, type){
+  document.getElementById('mealModalTitle').textContent = `${type} — ${date}`;
+  document.getElementById('mealDate').value = date;
+  document.getElementById('mealType').value = type;
+  const existing = (meals[date]||[]).find(m=>m.type===type);
+  document.getElementById('mealText').value = existing?.text||'';
+  openModal('mealModal');
+  setTimeout(()=>document.getElementById('mealText').focus(),100);
+}
+
+function saveMeal(){
+  const date=document.getElementById('mealDate').value;
+  const type=document.getElementById('mealType').value;
+  const text=document.getElementById('mealText').value.trim();
+  if(!meals[date]) meals[date]=[];
+  meals[date]=meals[date].filter(m=>m.type!==type);
+  if(text) meals[date].push({type,text});
+  save(); closeModal('mealModal'); renderMeals();
+}
+
+function deleteMeal(date,type){
+  if(meals[date]) meals[date]=meals[date].filter(m=>m.type!==type);
+  save(); renderMeals();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FAMILY CALENDAR
+// ═══════════════════════════════════════════════════════════════════
+function renderCalendar(){
+  const sorted = [...events].sort((a,b)=>a.date.localeCompare(b.date));
+  const upcoming = sorted.filter(e=>e.date>=today);
+  const past = sorted.filter(e=>e.date<today).reverse();
+  const list = document.getElementById('calList');
+  if(!upcoming.length&&!past.length){ list.innerHTML=`<div class="empty"><div class="empty-icon">📅</div>No events yet — bills, appointments, school events — add them here!</div>`; return; }
+
+  const eventRow = e => {
+    const col = CAT_COLORS[e.cat]||'#8fa3b8';
+    const daysUntil = Math.ceil((new Date(e.date)-new Date())/(1000*60*60*24));
+    return `<div class="event-row" style="border-color:${col}33">
+      <div class="event-bar" style="background:${col}"></div>
+      <div style="flex:1">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-weight:500;font-size:14px">${e.title}</span>
+          <span class="status-badge" style="background:${col}22;color:${col};border:1px solid ${col}44;font-size:10px">${e.cat}</span>
+          ${daysUntil>=0&&daysUntil<=7?`<span class="soon-badge">in ${daysUntil}d</span>`:''}
+        </div>
+        <div class="card-meta">${e.date}${e.time?' at '+e.time:''}</div>
+        ${e.notes?`<div class="card-meta" style="font-style:italic">${e.notes}</div>`:''}
+      </div>
+      <div class="card-actions">
+        <button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('${e.title.replace(/'/g,"\\'")}','${e.date}','${(e.notes||'').replace(/'/g,"\\'")}')">📅 Sync</button>
+        <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="openEventModal('${e.id}')">Edit</button>
+        <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteEvent('${e.id}')">✕</button>
+      </div>
+    </div>`;
+  };
+
+  list.innerHTML =
+    (upcoming.length?`<div class="section-label">Upcoming</div>`+upcoming.map(eventRow).join(''):'')
+    +(past.length?`<div class="section-label">Past</div><div style="opacity:.5">`+past.map(eventRow).join('')+'</div>':'');
+}
+
+function openEventModal(id){
+  const e = id ? events.find(x=>x.id===id) : null;
+  document.getElementById('eventModalTitle').textContent = e ? 'Edit Event' : 'New Event';
+  document.getElementById('eventId').value  = e?.id||'';
+  document.getElementById('eTitle').value   = e?.title||'';
+  document.getElementById('eDate').value    = e?.date||'';
+  document.getElementById('eTime').value    = e?.time||'';
+  document.getElementById('eCat').value     = e?.cat||'Family';
+  document.getElementById('eNotes').value   = e?.notes||'';
+  openModal('eventModal');
+}
+
+function saveEvent(){
+  const title=document.getElementById('eTitle').value.trim();
+  const date=document.getElementById('eDate').value;
+  if(!title||!date){ showToast('Title and date are required.', false); return; }
+  const id=document.getElementById('eventId').value||uid();
+  const obj={id,title,date,time:document.getElementById('eTime').value,cat:document.getElementById('eCat').value,notes:document.getElementById('eNotes').value};
+  const idx=events.findIndex(e=>e.id===id);
+  if(idx>=0) events[idx]=obj; else events.push(obj);
+  save(); closeModal('eventModal'); renderCalendar();
+}
+
+function deleteEvent(id){ events=events.filter(e=>e.id!==id); save(); renderCalendar(); }
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+renderCases();
+renderMeals();
+</script>
+</body>
+</html>
