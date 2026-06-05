@@ -6,218 +6,334 @@
 <title>Morrison Frink Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --navy:   #1a2744;
-  --navyD:  #0e1829;
-  --navyL:  #223059;
-  --orange: #c8540a;
-  --orangeL:#e06020;
-  --gold:   #c8a96e;
-  --goldL:  #dfc08a;
-  --cream:  #fdf6ec;
-  --muted:  #8fa3b8;
-  --white:  #ffffff;
-  --green:  #2e7d57;
-  --red:    #b03a2e;
-  --yellow: #b8860b;
-}
+:root{--navy:#1a2744;--navyD:#0e1829;--navyL:#223059;--orange:#c8540a;--gold:#c8a96e;--goldL:#dfc08a;--muted:#8fa3b8;--white:#fff;--green:#2e7d57;--red:#b03a2e;--yellow:#b8860b;--purple:#6b4fa0}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--navyD);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--navyD)}::-webkit-scrollbar-thumb{background:#c8a96e44;border-radius:3px}
-
-/* Header */
-header{background:var(--navy);border-bottom:2px solid #c8a96e33;padding:0 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
-.logo{padding:14px 0}
-.logo-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;font-weight:700;line-height:1}
-.logo-sub{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
-nav{display:flex;gap:4px;flex-wrap:wrap;padding:8px 0}
-.nav-btn{background:transparent;color:var(--muted);border:none;border-radius:6px;padding:8px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px;transition:all .15s}
+header{background:var(--navy);border-bottom:2px solid #c8a96e33;padding:0 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+.logo{padding:11px 0}.logo-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:18px;font-weight:700;line-height:1}.logo-sub{color:var(--muted);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+nav{display:flex;gap:2px;flex-wrap:wrap;padding:7px 0}
+.nav-btn{background:transparent;color:var(--muted);border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:12px;transition:all .15s}
 .nav-btn.active{background:var(--orange);color:#fff}
 .spacer{flex:1}
-.gcal-btn{background:#c8a96e22;color:var(--gold);border:1px solid #c8a96e44;border-radius:6px;padding:7px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;white-space:nowrap}
+.gcal-btn{background:#c8a96e22;color:var(--gold);border:1px solid #c8a96e44;border-radius:6px;padding:5px 11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;white-space:nowrap}
 .gcal-btn.connected{background:#2e7d5722;color:var(--green);border-color:#2e7d5744}
-
-/* Main */
-main{padding:24px;max-width:1100px;margin:0 auto}
-
-/* Panels */
+.user-switcher{display:flex;gap:3px;background:#ffffff0a;border-radius:8px;padding:3px}
+.user-btn{border:none;border-radius:5px;padding:4px 11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;transition:all .15s;background:transparent;color:var(--muted)}
+.user-btn.active-martice{background:var(--orange);color:#fff}
+.user-btn.active-chloe{background:var(--purple);color:#fff}
+.user-btn.active-all{background:var(--gold);color:var(--navy)}
+main{padding:18px;max-width:1180px;margin:0 auto}
 .panel{display:none}.panel.active{display:block}
-
+/* Due today banner */
+.due-banner{background:linear-gradient(90deg,#b03a2e22,#c8540a22);border:1px solid #c8540a44;border-radius:10px;padding:11px 16px;margin-bottom:16px;display:none}
+.due-banner.show{display:block}
+.due-banner-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:6px}
+.due-item{font-size:13px;color:var(--goldL);padding:3px 0;display:flex;gap:8px;align-items:center}
+/* Search bar */
+.search-bar{position:relative;margin-bottom:14px}
+.search-bar input{width:100%;background:var(--navy);border:1px solid #8fa3b833;border-radius:10px;padding:9px 14px 9px 38px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.search-bar input::placeholder{color:var(--muted)}
+.search-bar::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px}
 /* Filter bar */
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
-.filter-chip{background:transparent;border:1px solid #8fa3b844;border-radius:99px;padding:5px 14px;cursor:pointer;color:var(--muted);font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s}
+.filter-bar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filter-chip{background:transparent;border:1px solid #8fa3b844;border-radius:99px;padding:4px 12px;cursor:pointer;color:var(--muted);font-size:11px;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .15s}
 .filter-chip.active{background:#c8540a22;border-color:var(--orange);color:var(--orange)}
-.count-badge{background:var(--orange);color:#fff;border-radius:99px;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:4px}
-
+.count-badge{background:var(--orange);color:#fff;border-radius:99px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-right:3px}
 /* Buttons */
-.btn-primary{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px}
-.btn-secondary{background:transparent;color:var(--muted);border:1px solid #8fa3b844;border-radius:8px;padding:9px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:13px}
-.btn-sm{border-radius:6px;padding:5px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;white-space:nowrap;border:1px solid transparent}
-
-/* Cards */
-.card{background:var(--navyL);border-radius:12px;padding:16px 20px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;border:1px solid #ffffff11}
-.card-body{flex:1;min-width:0}
-.card-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin-bottom:4px}
-.card-meta{color:var(--muted);font-size:12px;margin-top:3px}
-.card-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
-.status-badge{border-radius:99px;padding:2px 10px;font-size:11px;font-weight:600}
-.priority-badge{border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:1px}
-.tag{color:var(--muted);font-size:11px;border:1px solid #8fa3b833;border-radius:99px;padding:1px 7px}
-
-/* Section label */
-.section-label{color:var(--muted);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:18px 0 8px}
-
-/* Empty state */
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
-.empty-icon{font-size:36px;margin-bottom:12px}
-
+.btn-primary{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:7px 15px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px}
+.btn-chloe{background:var(--purple);color:#fff;border:none;border-radius:8px;padding:7px 15px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px}
+.btn-secondary{background:transparent;color:var(--muted);border:1px solid #8fa3b844;border-radius:8px;padding:7px 13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;font-size:12px}
+.btn-sm{border-radius:6px;padding:3px 9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;white-space:nowrap;border:1px solid transparent}
+.btn-green{background:#2e7d5722;color:var(--green);border:1px solid #2e7d5744;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600}
+/* Case cards */
+.case-card{background:var(--navyL);border-radius:13px;margin-bottom:12px;border:1px solid #ffffff11;overflow:hidden;transition:box-shadow .2s}
+.case-card:hover{box-shadow:0 4px 24px #0006}
+.case-card-header{padding:14px 18px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.case-card-body{padding:0 18px 16px;border-top:1px solid #ffffff0a;display:none}
+.case-card-body.open{display:block}
+.case-card-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600}
+/* Quick status dropdown on card */
+.quick-status{background:#0e1829;border:1px solid #ffffff22;border-radius:6px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:11px;padding:3px 8px;cursor:pointer;outline:none}
+.quick-status option{background:var(--navy)}
+/* Checklist */
+.checklist-group{margin-bottom:12px}
+.checklist-group-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:600}
+.check-item{display:flex;align-items:center;gap:9px;padding:5px 9px;border-radius:7px;margin-bottom:3px;background:#ffffff05;cursor:pointer;transition:background .15s}
+.check-item:hover{background:#ffffff0f}
+.check-item.checked{opacity:.45}
+.check-box{width:17px;height:17px;border-radius:4px;border:2px solid var(--muted);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.check-box.done{border-color:var(--green);background:var(--green);color:#fff}
+.check-label{font-size:12px;flex:1}
+.check-item.checked .check-label{text-decoration:line-through;color:var(--muted)}
+.check-date{font-size:10px;color:var(--muted)}
+.check-item.na{opacity:.35;background:transparent}
+.check-item.na .check-label{text-decoration:line-through;color:var(--muted);font-style:italic}
+.na-btn{background:transparent;border:1px solid #8fa3b833;border-radius:4px;padding:1px 5px;font-size:9px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;margin-left:2px;white-space:nowrap}
+.na-btn.active{background:#8fa3b822;color:#fff;border-color:var(--muted)}
+.add-check-row{display:flex;gap:6px;margin-top:6px;align-items:center}
+.add-check-row input{flex:1;background:#0e1829;border:1px solid #8fa3b833;border-radius:6px;padding:4px 9px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;outline:none}
+.smart-alert{background:#b03a2e18;border:1px solid #b03a2e44;border-radius:8px;padding:7px 11px;margin-bottom:5px;font-size:11px;color:#e07060;display:flex;gap:7px;align-items:flex-start;line-height:1.4}
+.smart-alert.warn{background:#b8860b18;border-color:#b8860b44;color:#d4a830}
+.school-card{background:var(--navyL);border-radius:11px;padding:13px 16px;margin-bottom:9px;border:1px solid #6b4fa033}
+.school-chip{background:#6b4fa022;color:var(--purple);border:1px solid #6b4fa044;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:600}
+/* Touchpoints */
+.touchpoint-entry{background:#ffffff08;border-radius:8px;padding:9px 13px;margin-bottom:7px;border-left:3px solid var(--gold)}
+.touchpoint-date{font-size:10px;color:var(--gold);font-weight:600;margin-bottom:2px}
+.touchpoint-text{font-size:12px;color:var(--goldL)}
+.add-touchpoint{display:flex;gap:8px;margin-top:8px;align-items:flex-start}
+.add-touchpoint textarea{flex:1;background:#0e1829;border:1px solid #8fa3b844;border-radius:8px;padding:7px 10px;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;resize:none;height:65px;outline:none}
+/* Reminder badges */
+.reminder-badge{background:#b03a2e22;color:var(--red);border:1px solid #b03a2e44;border-radius:99px;padding:2px 8px;font-size:10px;font-weight:600}
+.reminder-badge.soon{background:#b8860b22;color:var(--yellow);border-color:#b8860b44}
+.reminder-badge.ok{background:#2e7d5722;color:var(--green);border-color:#2e7d5744}
+/* Progress */
+.progress-bar{height:3px;background:#ffffff11;border-radius:99px;margin-top:7px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:99px;transition:width .4s}
+/* Owner tags */
+.owner-tag-martice{background:#c8540a22;color:var(--orange);border:1px solid #c8540a44;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700}
+.owner-tag-chloe{background:#6b4fa022;color:var(--purple);border:1px solid #6b4fa044;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:700}
+.status-badge{border-radius:99px;padding:2px 9px;font-size:10px;font-weight:600}
+.tag{color:var(--muted);font-size:10px;border:1px solid #8fa3b833;border-radius:99px;padding:1px 7px}
+.pay-status{background:#6b4fa022;color:var(--purple);border:1px solid #6b4fa044;border-radius:99px;padding:1px 8px;font-size:10px;font-weight:600}
+.section-label{color:var(--muted);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:16px 0 7px}
+.empty{text-align:center;padding:45px 20px;color:var(--muted)}.empty-icon{font-size:32px;margin-bottom:10px}
+.divider{height:1px;background:#ffffff0a;margin:12px 0}
+.misc-item{display:flex;align-items:center;gap:8px;background:#ffffff05;border-radius:7px;padding:5px 9px;margin-bottom:4px}
+.misc-item input{flex:1;background:transparent;border:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;outline:none}
 /* Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:#000b;z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-overlay{display:none;position:fixed;inset:0;background:#000c;z-index:200;align-items:center;justify-content:center;padding:14px}
 .modal-overlay.open{display:flex}
-.modal{background:var(--navyL);border-radius:16px;padding:28px;width:100%;max-width:500px;border:1px solid #c8a96e44;max-height:90vh;overflow-y:auto}
-.modal-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:20px;margin-bottom:20px}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-
-/* Form fields */
-.field{margin-bottom:14px}
-.field label{display:block;color:var(--muted);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
-.field input,.field select,.field textarea{width:100%;background:#0e1829;border:1px solid #8fa3b844;border-radius:8px;padding:9px 12px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
-.field textarea{resize:vertical;min-height:70px}
+.modal{background:var(--navyL);border-radius:15px;padding:22px;width:100%;max-width:600px;border:1px solid #c8a96e44;max-height:93vh;overflow-y:auto}
+.modal-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:18px;margin-bottom:16px}
+.modal-footer{display:flex;gap:9px;justify-content:flex-end;margin-top:16px}
+.field{margin-bottom:12px}
+.field label{display:block;color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;background:#0e1829;border:1px solid #8fa3b844;border-radius:8px;padding:7px 11px;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.field textarea{resize:vertical;min-height:110px}
 .field select option{background:var(--navy)}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-input[type=date]::-webkit-calendar-picker-indicator,
-input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer}
-
-/* Checkbox */
-.check-circle{width:22px;height:22px;border-radius:99px;border:2px solid var(--muted);background:transparent;cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;transition:all .15s}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:pointer}
+/* Wizard */
+.wizard-step{display:none}.wizard-step.active{display:block}
+.disp-btn{background:#ffffff08;border:2px solid #ffffff11;border-radius:11px;padding:13px 17px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--white);width:100%;text-align:left;margin-bottom:9px;transition:all .15s}
+.disp-btn:hover{background:#ffffff14;border-color:var(--gold)}
+.disp-btn .disp-sub{font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+/* Meals */
+.check-circle{width:20px;height:20px;border-radius:99px;border:2px solid var(--muted);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;transition:all .15s}
 .check-circle.done{border-color:var(--green);background:var(--green)}
-
-/* Meal grid */
-.meal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.meal-day{background:var(--navy);border-radius:10px;padding:10px;border:1px solid #ffffff11;min-height:180px}
+.meal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.meal-day{background:var(--navy);border-radius:9px;padding:9px;border:1px solid #ffffff11;min-height:170px}
 .meal-day.today{background:var(--navyL);border-color:#c8a96e66}
-.meal-day-header{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--muted)}
+.meal-day-header{font-family:'Playfair Display',serif;font-size:12px;font-weight:700;margin-bottom:7px;color:var(--muted)}
 .meal-day.today .meal-day-header{color:var(--gold)}
 .meal-type-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
-.meal-slot{margin-bottom:6px}
-.meal-entry{background:#c8540a18;border-radius:6px;padding:4px 7px;font-size:11px;color:var(--goldL);cursor:pointer;display:flex;align-items:center;gap:4px}
+.meal-slot{margin-bottom:5px}
+.meal-entry{background:#c8540a18;border-radius:5px;padding:3px 6px;font-size:10px;color:var(--goldL);cursor:pointer;display:flex;align-items:center;gap:3px}
 .meal-entry span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.meal-add{background:transparent;border:1px dashed #8fa3b844;border-radius:6px;padding:3px 6px;font-size:10px;color:var(--muted);cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-.meal-sync{margin-top:6px;background:transparent;border:1px solid #c8a96e33;border-radius:6px;padding:3px 7px;font-size:10px;color:var(--gold);cursor:pointer;width:100%;font-family:'DM Sans',sans-serif}
-.week-nav{display:flex;align-items:center;gap:16px;margin-bottom:20px}
-.week-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:16px;flex:1;text-align:center}
-
-/* Event row */
-.event-row{background:var(--navyL);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;gap:12px;align-items:center;border:1px solid #ffffff11}
-.event-bar{width:4px;height:40px;border-radius:4px;flex-shrink:0}
-.soon-badge{color:var(--orange);font-size:11px;font-weight:600}
-
-/* Toast */
-#toast{position:fixed;top:20px;right:20px;z-index:9999;background:var(--green);color:#fff;padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.4);display:none;animation:fadeIn .2s}
+.meal-add{background:transparent;border:1px dashed #8fa3b844;border-radius:5px;padding:2px 5px;font-size:9px;color:var(--muted);cursor:pointer;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.meal-sync{margin-top:5px;background:transparent;border:1px solid #c8a96e33;border-radius:5px;padding:2px 6px;font-size:9px;color:var(--gold);cursor:pointer;width:100%;font-family:'DM Sans',sans-serif}
+.week-nav{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.week-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:15px;flex:1;text-align:center}
+.event-row{background:var(--navyL);border-radius:9px;padding:11px 15px;margin-bottom:7px;display:flex;gap:11px;align-items:center;border:1px solid #ffffff11}
+.event-bar{width:4px;height:38px;border-radius:4px;flex-shrink:0}
+.soon-badge{color:var(--orange);font-size:10px;font-weight:600}
+#toast{position:fixed;top:18px;right:18px;z-index:9999;background:var(--green);color:#fff;padding:10px 17px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 20px #0006;display:none;animation:fadeIn .2s}
 #toast.error{background:var(--red)}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-
-/* Responsive */
-@media(max-width:700px){
-  .meal-grid{grid-template-columns:repeat(2,1fr)}
-  .field-row{grid-template-columns:1fr}
-  header{gap:8px}
-  .nav-btn{padding:7px 10px;font-size:12px}
-  main{padding:16px}
-}
-@media(max-width:400px){
-  .meal-grid{grid-template-columns:1fr}
-}
-
-/* Sync setup banner */
-.sync-banner{background:#c8a96e11;border:1px solid #c8a96e44;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--goldL);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.sync-banner{background:#c8a96e11;border:1px solid #c8a96e44;border-radius:9px;padding:11px 15px;margin-bottom:16px;font-size:12px;color:var(--goldL);display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .sync-banner a{color:var(--gold);font-weight:600}
+/* Print modal */
+#printArea{display:none}
+@media print{body>*{display:none}#printArea{display:block!important;color:#000;font-family:sans-serif;padding:20px}}
+@media(max-width:700px){.meal-grid{grid-template-columns:repeat(2,1fr)}.field-row{grid-template-columns:1fr}header{gap:6px}.nav-btn{padding:5px 8px;font-size:11px}main{padding:12px}}
+@media(max-width:400px){.meal-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <div id="toast"></div>
+<div id="printArea"></div>
 
-<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
 <header>
-  <div class="logo">
-    <div class="logo-title">Morrison Frink</div>
-    <div class="logo-sub">Family Dashboard</div>
-  </div>
+  <div class="logo"><div class="logo-title">Morrison Frink</div><div class="logo-sub">Family Dashboard</div></div>
   <nav>
     <button class="nav-btn active" onclick="switchTab('cases')">⚫ Cases</button>
     <button class="nav-btn" onclick="switchTab('tasks')">✓ Tasks</button>
     <button class="nav-btn" onclick="switchTab('meals')">🍽 Meals</button>
     <button class="nav-btn" onclick="switchTab('calendar')">📅 Calendar</button>
+    <button class="nav-btn" onclick="switchTab('school')" style="color:#6b4fa0">🎓 School</button>
   </nav>
   <div class="spacer"></div>
+  <div class="user-switcher">
+    <button class="user-btn active-martice" id="btnMartice" onclick="setUser('martice')">Martice</button>
+    <button class="user-btn" id="btnChloe" onclick="setUser('chloe')">Chloe</button>
+    <button class="user-btn" id="btnAll" onclick="setUser('all')">All Cases</button>
+  </div>
   <button class="gcal-btn" id="gcalBtn" onclick="signInGoogle()">Connect Google Cal</button>
 </header>
 
-<!-- ═══════════════════════════════ MAIN ════════════════════════════════ -->
 <main>
-
-  <!-- SYNC SETUP BANNER (shown until Google Sheets configured) -->
   <div class="sync-banner" id="syncBanner">
-    💡 <div><strong>Shared sync:</strong> To sync data with your partner, follow the <a href="#" onclick="showSyncHelp()">one-time setup guide</a>. Until then, data saves locally on each device.</div>
+    💡 <div><strong>Shared sync:</strong> <a href="#" onclick="showSyncHelp()">One-time setup guide</a> — until configured, data saves locally per device.</div>
     <button class="btn-sm" style="background:var(--gold);color:var(--navy);border:none;margin-left:auto" onclick="document.getElementById('syncBanner').style.display='none'">Dismiss</button>
   </div>
 
-  <!-- ── CASES ── -->
+  <!-- CASES -->
   <div class="panel active" id="panel-cases">
+    <!-- Due Today Banner -->
+    <div class="due-banner" id="dueBanner">
+      <div class="due-banner-title">🔴 Due Today / Tomorrow</div>
+      <div id="dueItems"></div>
+    </div>
+    <!-- Search -->
+    <div class="search-bar"><input type="text" id="caseSearch" placeholder="Search cases by name, case #, disc #…" oninput="renderCases()"/></div>
+    <!-- Filters -->
     <div class="filter-bar" id="caseFilters"></div>
     <div id="caseList"></div>
   </div>
 
-  <!-- ── TASKS ── -->
+  <!-- TASKS -->
   <div class="panel" id="panel-tasks">
     <div class="filter-bar" id="taskFilters"></div>
     <div id="taskList"></div>
   </div>
 
-  <!-- ── MEALS ── -->
+  <!-- MEALS -->
   <div class="panel" id="panel-meals">
     <div class="week-nav">
       <button class="btn-secondary" onclick="changeWeek(-1)">← Prev</button>
       <div class="week-title" id="weekLabel"></div>
-      <button class="btn-secondary" style="font-size:11px" onclick="changeWeek(0)">Today</button>
+      <button class="btn-secondary" style="font-size:10px" onclick="changeWeek(0)">Today</button>
       <button class="btn-secondary" onclick="changeWeek(1)">Next →</button>
     </div>
     <div class="meal-grid" id="mealGrid"></div>
   </div>
 
-  <!-- ── CALENDAR ── -->
+  <!-- CALENDAR -->
   <div class="panel" id="panel-calendar">
-    <div class="filter-bar">
-      <div class="spacer"></div>
-      <button class="btn-primary" onclick="openEventModal()">+ Add Event</button>
-    </div>
+    <div class="filter-bar"><div class="spacer"></div><button class="btn-primary" onclick="openEventModal()">+ Add Event</button></div>
     <div id="calList"></div>
   </div>
 
+  <!-- SCHOOL (Chloe) -->
+  <div class="panel" id="panel-school">
+    <div class="filter-bar" id="schoolFilters"></div>
+    <div id="schoolList"></div>
+  </div>
 </main>
 
-<!-- ═══════════════════════════════ MODALS ══════════════════════════════ -->
-
-<!-- Case Modal -->
+<!-- ═══════════════ CASE MODAL ═══════════════ -->
 <div class="modal-overlay" id="caseModal">
-  <div class="modal">
-    <div class="modal-title" id="caseModalTitle">New Funeral Case</div>
-    <input type="hidden" id="caseId"/>
-    <div class="field"><label>Family Name *</label><input type="text" id="cName" placeholder="e.g. Anderson"/></div>
-    <div class="field-row">
-      <div class="field"><label>Case #</label><input type="text" id="cCaseNo" placeholder="12345"/></div>
-      <div class="field"><label>Type</label><select id="cType"><option>Funeral</option><option>Cremation</option><option>Pre-Need</option><option>At-Need</option><option>Graveside</option></select></div>
-    </div>
-    <div class="field"><label>Status</label><select id="cStatus"><option>New</option><option>In Progress</option><option>Pending Family</option><option>Pending Docs</option><option>Complete</option></select></div>
-    <div class="field"><label>Next Step / Action Needed</label><input type="text" id="cNextStep" placeholder="e.g. Call family re: marker selection"/></div>
-    <div class="field"><label>Due Date</label><input type="date" id="cDue"/></div>
-    <div class="field"><label>Notes</label><textarea id="cNotes" placeholder="Any additional details…"></textarea></div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="closeModal('caseModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveCase()">Save Case</button>
+ <div class="modal" style="max-width:630px">
+  <div class="modal-title" id="caseModalTitle">New Case</div>
+  <!-- Step 1 -->
+  <div class="wizard-step active" id="ws1">
+    <div class="field"><label>Who is adding this case?</label>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="disp-btn" onclick="selectOwner('martice')" style="flex:1">🟠 Martice<div class="disp-sub">Cemetery / Pre-Need</div></button>
+        <button class="disp-btn" onclick="selectOwner('chloe')" style="flex:1">🟣 Chloe<div class="disp-sub">Funeral Director</div></button>
+      </div>
     </div>
   </div>
+  <!-- Step 2 -->
+  <div class="wizard-step" id="ws2">
+    <div style="margin-bottom:11px;color:var(--muted);font-size:12px" id="ws2Owner"></div>
+    <div id="marticeTypes">
+      <label style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px">Case Type</label>
+      <button class="disp-btn" onclick="selectDisp('Cemetery Cremation')">⚱️ Cemetery Cremation<div class="disp-sub">Cremation with cemetery property/niche</div></button>
+      <button class="disp-btn" onclick="selectDisp('Cemetery Casket')">⚰️ Cemetery Casket / Burial<div class="disp-sub">Casket burial on cemetery property</div></button>
+      <button class="disp-btn" onclick="selectDisp('Pre-Need Funeral')">📋 Pre-Need Funeral<div class="disp-sub">Funeral pre-arrangement contract</div></button>
+      <button class="disp-btn" onclick="selectDisp('Pre-Need Cemetery')">📋 Pre-Need Cemetery<div class="disp-sub">Cemetery property pre-arrangement</div></button>
+    </div>
+    <div id="chloeDisp" style="display:none">
+      <label style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px">Disposition</label>
+      <button class="disp-btn" onclick="selectDisp('Cremation')">🔥 Cremation<div class="disp-sub">Direct or with service</div></button>
+      <button class="disp-btn" onclick="selectDisp('Burial')">⚰️ Burial<div class="disp-sub">Full burial / graveside</div></button>
+    </div>
+    <button class="btn-secondary" onclick="goStep(1)" style="margin-top:6px">← Back</button>
+  </div>
+  <!-- Step 3 -->
+  <div class="wizard-step" id="ws3">
+    <div style="margin-bottom:11px;color:var(--muted);font-size:12px" id="ws3Disp"></div>
+    <label style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px">Service Type</label>
+    <div id="serviceTypeList"></div>
+    <button class="btn-secondary" onclick="goStep(2)" style="margin-top:6px">← Back</button>
+  </div>
+  <!-- Step 4: Form -->
+  <div class="wizard-step" id="ws4">
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px" id="ws4Tags"></div>
+    <input type="hidden" id="caseId"/>
+    <div class="field"><label>Decedent / Family Name *</label><input type="text" id="cDecedent" placeholder="e.g. Morris, Victoris"/></div>
+    <div class="field-row">
+      <div class="field"><label>Metal Disc #</label><input type="text" id="cDisc" placeholder="27694"/></div>
+      <div class="field"><label>Passare Case #</label><input type="text" id="cPassare" placeholder="WM-2026-0219"/></div>
+    </div>
+    <div class="field"><label>Passare Link</label><input type="text" id="cPassareLink" placeholder="https://app.passare.com/..."/></div>
+    <div class="field-row">
+      <div class="field"><label>Service Date</label><input type="date" id="cServiceDate"/></div>
+      <div class="field"><label>Service Time</label><input type="time" id="cServiceTime"/></div>
+    </div>
+    <div class="field"><label>Status</label>
+      <select id="cStatus">
+        <option>New</option><option>In Progress</option><option>Pending Family</option><option>Pending Docs</option><option>Pending Payment</option><option>Complete</option>
+      </select>
+    </div>
+    <!-- Chloe payment -->
+    <div id="chloePaySection" style="display:none">
+      <div class="divider"></div>
+      <div style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:9px">Payment</div>
+      <div class="field"><label>Payment Method</label>
+        <select id="cPayment">
+          <option value="">— Select —</option>
+          <option>Cash</option><option>Credit Card</option><option>Check</option>
+          <option>Global Atlantic Contract</option><option>Clearpoint Contract</option><option>ClaimCheck</option>
+        </select>
+      </div>
+      <div class="field"><label>Payment Status</label>
+        <select id="cPayStatus">
+          <option value="">— Select current status —</option>
+          <option>Waiting for Family Payment</option><option>Pending DocuSign</option>
+          <option>ClaimCheck Form Pending</option><option>Contract Submitted — Awaiting Funds</option>
+          <option>Claim Filed — Awaiting Approval</option><option>Payment Received — Processing</option>
+          <option>Payment Complete</option>
+        </select>
+      </div>
+      <div class="field"><label>Payment Notes</label><input type="text" id="cPayNotes" placeholder="e.g. Submitted 6/4, awaiting GA response" style="min-height:unset"/></div>
+      <div class="divider"></div>
+      <div class="field"><label>Urn / Container Details</label><input type="text" id="cUrn" placeholder="e.g. Slate gray urn / Botanical Reflections 282982" style="min-height:unset"/></div>
+      <div class="field"><label>Casket / Container #</label><input type="text" id="cCasket" placeholder="e.g. Trayview 242414 / minimum cardboard" style="min-height:unset"/></div>
+    </div>
+    <!-- Martice payment -->
+    <div id="marticePaySection" style="display:none">
+      <div class="field"><label>Payment Method</label>
+        <select id="mPayment">
+          <option value="">— Select —</option>
+          <option>Cash</option><option>Credit Card</option><option>Check</option>
+          <option>Financing</option><option>Pre-Need Contract</option><option>Insurance / Policy</option><option>Medicaid / Assistance</option>
+        </select>
+      </div>
+      <div class="field"><label>Payment Status</label>
+        <select id="mPayStatus">
+          <option value="">— Select —</option>
+          <option>Waiting for Family Payment</option><option>Pending DocuSign</option>
+          <option>Payment Plan Active</option><option>Payment Received</option><option>Payment Complete</option>
+        </select>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="field"><label>Notes</label><textarea id="cNotes" placeholder="Initial case notes, family details, special requests…"></textarea></div>
+    <!-- Misc -->
+    <div style="margin-bottom:12px">
+      <label style="display:block;color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Misc / Additional Items</label>
+      <div id="miscList"></div>
+      <button type="button" onclick="addMiscItem()" style="background:transparent;border:1px dashed #8fa3b844;border-radius:7px;padding:5px 13px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;width:100%;margin-top:4px">+ Add Item</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="goStep(3)" id="caseBackBtn">← Back</button>
+      <button class="btn-primary" id="caseSaveBtn" onclick="saveCase()">Save Case</button>
+    </div>
+  </div>
+ </div>
 </div>
 
 <!-- Task Modal -->
@@ -231,7 +347,7 @@ input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:poi
       <div class="field"><label>Category</label><select id="tCat"><option>Work</option><option>Personal</option><option>Home</option><option>Errand</option></select></div>
     </div>
     <div class="field"><label>Due Date</label><input type="date" id="tDue"/></div>
-    <div class="field"><label>Notes</label><textarea id="tNotes"></textarea></div>
+    <div class="field"><label>Notes</label><textarea id="tNotes" style="min-height:70px"></textarea></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal('taskModal')">Cancel</button>
       <button class="btn-primary" onclick="saveTask()">Save Task</button>
@@ -244,15 +360,13 @@ input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:poi
   <div class="modal">
     <div class="modal-title" id="eventModalTitle">New Event</div>
     <input type="hidden" id="eventId"/>
-    <div class="field"><label>Title *</label><input type="text" id="eTitle" placeholder="e.g. Rent due, Doctor appt"/></div>
+    <div class="field"><label>Title *</label><input type="text" id="eTitle"/></div>
     <div class="field-row">
       <div class="field"><label>Date *</label><input type="date" id="eDate"/></div>
       <div class="field"><label>Time</label><input type="time" id="eTime"/></div>
     </div>
-    <div class="field"><label>Category</label><select id="eCat">
-      <option>Family</option><option>Bill/Payment</option><option>Appointment</option><option>School</option><option>Other</option>
-    </select></div>
-    <div class="field"><label>Notes</label><textarea id="eNotes"></textarea></div>
+    <div class="field"><label>Category</label><select id="eCat"><option>Family</option><option>Bill/Payment</option><option>Appointment</option><option>School</option><option>Other</option></select></div>
+    <div class="field"><label>Notes</label><textarea id="eNotes" style="min-height:70px"></textarea></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal('eventModal')">Cancel</button>
       <button class="btn-primary" onclick="saveEvent()">Save Event</button>
@@ -260,12 +374,12 @@ input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:poi
   </div>
 </div>
 
-<!-- Meal edit modal -->
+<!-- Meal Modal -->
 <div class="modal-overlay" id="mealModal">
   <div class="modal" style="max-width:360px">
     <div class="modal-title" id="mealModalTitle">Add Meal</div>
     <input type="hidden" id="mealDate"/><input type="hidden" id="mealType"/>
-    <div class="field"><label>What's on the menu?</label><input type="text" id="mealText" placeholder="e.g. Grilled salmon & rice" onkeydown="if(event.key==='Enter')saveMeal()"/></div>
+    <div class="field"><label>What's on the menu?</label><input type="text" id="mealText" onkeydown="if(event.key==='Enter')saveMeal()"/></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal('mealModal')">Cancel</button>
       <button class="btn-primary" onclick="saveMeal()">Save</button>
@@ -273,433 +387,810 @@ input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.6);cursor:poi
   </div>
 </div>
 
-<!-- Sync Help Modal -->
+<!-- School Modal -->
+<div class="modal-overlay" id="schoolModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title" id="schoolModalTitle">New Assignment</div>
+    <input type="hidden" id="schoolId"/>
+    <div class="field"><label>Assignment / Task *</label><input type="text" id="sTitle" placeholder="e.g. Chapter 5 Quiz, Embalming lab report"/></div>
+    <div class="field-row">
+      <div class="field"><label>Class / Subject</label><input type="text" id="sClass" placeholder="e.g. Mortuary Science 101"/></div>
+      <div class="field"><label>Type</label>
+        <select id="sType">
+          <option>Assignment</option><option>Quiz</option><option>Exam</option>
+          <option>Lab</option><option>Project</option><option>Reading</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Due Date</label><input type="date" id="sDue"/></div>
+      <div class="field"><label>Priority</label>
+        <select id="sPriority"><option>High</option><option selected>Medium</option><option>Low</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="sNotes" style="min-height:70px" placeholder="Notes, reminders, links…"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('schoolModal')">Cancel</button>
+      <button style="background:var(--purple);color:#fff;border:none;border-radius:8px;padding:7px 15px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px" onclick="saveSchool()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Modal -->
 <div class="modal-overlay" id="syncModal">
-  <div class="modal" style="max-width:540px">
-    <div class="modal-title">Setting Up Shared Sync</div>
-    <p style="color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:16px">
-      To share data between your device and your partner's, the easiest free option is a shared Google Sheet. Here's how:
-    </p>
-    <ol style="color:var(--goldL);font-size:13px;line-height:2;padding-left:20px">
-      <li>Create a Google Sheet and share it with both of you (Edit access)</li>
-      <li>Copy the Sheet ID from the URL (the long string between /d/ and /edit)</li>
-      <li>Paste it below and save</li>
-    </ol>
-    <div class="field" style="margin-top:16px"><label>Google Sheet ID</label><input type="text" id="sheetId" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"/></div>
-    <div class="field"><label>Google API Key (read/write)</label><input type="text" id="apiKey" placeholder="AIza…"/></div>
-    <p style="color:var(--muted);font-size:11px;margin-top:-8px">Get a free API key at <strong>console.cloud.google.com</strong> → Enable Sheets API → Credentials</p>
+  <div class="modal">
+    <div class="modal-title">Shared Sync Setup</div>
+    <p style="color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:13px">Create a shared Google Sheet, share with both of you (Edit access), enter the Sheet ID below.</p>
+    <div class="field"><label>Google Sheet ID</label><input type="text" id="sheetId" placeholder="Sheet ID from URL"/></div>
+    <div class="field"><label>Google API Key</label><input type="text" id="apiKey" placeholder="AIza…"/></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal('syncModal')">Cancel</button>
-      <button class="btn-primary" onclick="saveSyncConfig()">Save & Enable Sync</button>
+      <button class="btn-primary" onclick="saveSyncConfig()">Save</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════════════════════
-let cases   = JSON.parse(localStorage.getItem('bw:cases')  ||'[]');
-let tasks   = JSON.parse(localStorage.getItem('bw:tasks')  ||'[]');
-let meals   = JSON.parse(localStorage.getItem('bw:meals')  ||'{}');
-let events  = JSON.parse(localStorage.getItem('bw:events') ||'[]');
-let gToken  = null;
-let weekOffset = 0;
-let caseFilter = 'All';
-let taskFilter = 'All';
+// ═══════════════════════════════════════
+let cases   = JSON.parse(localStorage.getItem('bw:cases4')||'[]');
+let tasks   = JSON.parse(localStorage.getItem('bw:tasks') ||'[]');
+let meals   = JSON.parse(localStorage.getItem('bw:meals') ||'{}');
+let events  = JSON.parse(localStorage.getItem('bw:events')||'[]');
+let school  = JSON.parse(localStorage.getItem('bw:school')||'[]');
+let expandedCards = JSON.parse(localStorage.getItem('bw:expanded')||'{}');
+let gToken=null,weekOffset=0,caseFilter='All',taskFilter='All',activeUser='martice';
+let wOwner='',wDisp='',wServiceType='';
 
-const CASE_STATUSES = ['New','In Progress','Pending Family','Pending Docs','Complete'];
-const CASE_COLORS   = {'New':'#c8540a','In Progress':'#c8a96e','Pending Family':'#b8860b','Pending Docs':'#8fa3b8','Complete':'#2e7d57'};
-const PRIO_COLORS   = {High:'#b03a2e',Medium:'#c8540a',Low:'#8fa3b8'};
-const CAT_COLORS    = {Family:'#c8a96e','Bill/Payment':'#b03a2e',Appointment:'#c8540a',School:'#2e7d57',Other:'#8fa3b8'};
-const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const MEAL_TYPES = ['Breakfast','Lunch','Dinner','Snack'];
+const CASE_STATUSES=['New','In Progress','Pending Family','Pending Docs','Pending Payment','Complete'];
+const SC={New:'#c8540a','In Progress':'#c8a96e','Pending Family':'#b8860b','Pending Docs':'#8fa3b8','Pending Payment':'#6b4fa0',Complete:'#2e7d57'};
+const PC={High:'#b03a2e',Medium:'#c8540a',Low:'#8fa3b8'};
+const CC={Family:'#c8a96e','Bill/Payment':'#b03a2e',Appointment:'#c8540a',School:'#2e7d57',Other:'#8fa3b8'};
+const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MEAL_TYPES=['Breakfast','Lunch','Dinner','Snack'];
+const today=new Date().toISOString().slice(0,10);
 
-function uid(){ return Math.random().toString(36).slice(2,10); }
+const REMINDER_DAYS={'AOC / Direct Cremation':4,'Traditional Service':2,'Viewing & Service':2,'Memorial Service':3,'I.D. Viewing':3,'Graveside Service':3,'Traditional Burial Service':2,'Direct Burial / No Service':3};
+const getRDays=st=>REMINDER_DAYS[st]||4;
+
+const CHLOE_CHECKLISTS={
+  Cremation:{
+    'Death Certificates / Permits':['DC Worksheet Signed & Uploaded','Admin Tagged for DC Wkst & KCME DA','Vitals Entered Into WHALES','DC Approved','DCs Ordered','DCs Released to Family'],
+    Preproom:['Care Team Packet Uploaded/Tagged','Arranger Instructions Uploaded','Degree of Care Signed & Uploaded','First Call Signed & Uploaded','Clothing Received',"Arrangements/Add'l PEI Uploaded",'Embalmed/Min Prep','ID View Complete / Photo Uploaded'],
+    Cremation:['Cremation Auth Signed & Uploaded','Cremation Packet Uploaded/Tagged','Witness Cremation Scheduled','Fingerprints Needed?','LegacyTouch Pamphlet to Family','Lock(s) of Hair Released to Family','Urn Ordered','Keepsakes Ordered','Family Notified of Cremation Date','Urn/Keepsakes Released'],
+    'Service Details':['Service(s) Scheduled/OMS','Arrangement Recap in Passare','Follow-Up Email to Family','Officiant Confirmed','Check Request Form(s) Uploaded','Obituary - BW Website','Obituary - Newspaper','Casket Ordered/Delivered','Messenger Order Uploaded/Tagged','Livestream Set Up','Tribute Slideshow Test-Run'],
+    'Contract / Payment':['PN Research Complete','PN>AN Worksheet Complete/Uploaded','Claim Forms Signed/Uploaded','Contract Signed/Uploaded','Contract Signed in Passare','PIF or Insurance Verification','Payment Options Uploaded','Receipt(s) Uploaded']
+  },
+  Burial:{
+    'Death Certificates / Permits':['DC Worksheet Signed & Uploaded','Admin Tagged for DC Wkst & KCME DA','Vitals Entered Into WHALES','DC Approved','DCs Ordered','DCs Released to Family'],
+    Preproom:['Care Team Packet Uploaded/Tagged','Arranger Instructions Uploaded','Degree of Care Signed & Uploaded','First Call Signed & Uploaded','Clothing Received',"Arrangements/Add'l PEI Uploaded",'Embalmed/Fully Prepped','Dressed & Casketed'],
+    'Service Details':['Service(s) Scheduled/OMS','Arrangement Recap in Passare','Follow-Up Email to Family','Officiant Confirmed','Check Request Form(s) Uploaded','Obituary - BW Website','Obituary - Newspaper','Casket Ordered/Delivered','Property in Safe?','PEI Released to Family','Flowers Ordered/Confirmed','Catering Ordered/Confirmed','Cemetery Notified/Scheduled','Escorts Requested/Confirmed','Bagpipes/Butterflies/Doves','Musicians Confirmed','Messenger Order Uploaded/Tagged','Livestream Set Up','Tribute Slideshow Test-Run'],
+    'Contract / Payment':['PN Research Complete','PN>AN Worksheet Complete/Uploaded','Claim Forms Signed/Uploaded','Contract Signed/Uploaded','Contract Signed in Passare','PIF or Insurance Verification','Payment Options Uploaded','Receipt(s) Uploaded']
+  }
+};
+const MARTICE_CHECKLISTS={
+  'Cemetery Cremation':{'Property & Placement':['Property Confirmed/Located','Space Assignment Confirmed','Opening & Closing Scheduled','Inurnment Date/Time Set'],Products:['Urn Ordered','Urn Received','Niche Front / Vase Ordered','Memorial Merchandise Request Form Submitted'],Documentation:['Contract Signed','DocuSign Completed','ECF Collected','Recording Fee Collected','Passare Updated'],'Family Follow-Up':['Initial Contact Made','Payment Received/Arranged','Follow-Up Call (4 days)','Thank You / Aftercare Sent']},
+  'Cemetery Casket':{'Property & Placement':['Property Confirmed/Located','Space Assignment Confirmed','Opening & Closing Scheduled','Burial Date/Time Set','Vault Ordered/Confirmed'],Products:['Casket Ordered','Flowers Ordered/Confirmed','Memorial Merchandise Request Form Submitted'],Documentation:['Contract Signed','DocuSign Completed','ECF Collected','Recording Fee Collected','Deed Issued','Passare Updated'],'Family Follow-Up':['Initial Contact Made','Payment Received/Arranged','Follow-Up Call (4 days)','Thank You / Aftercare Sent']},
+  'Pre-Need Funeral':{Contract:['Pre-Need Contract Completed','Global Atlantic / Forethought Filed','Contract Signed','DocuSign Completed','Policy # Obtained'],'Products & Services':['Casket / Merchandise Selected','Service Type Confirmed','Funeral Home Notified'],'Follow-Up':['Initial Contact Made','Follow-Up Call (4 days)','Annual Review Scheduled']},
+  'Pre-Need Cemetery':{Property:['Property Selected','Space Assignment Confirmed','Deed Issued'],Contract:['Contract Signed','DocuSign Completed','ECF Collected','Recording Fee Collected','Payment Plan Set Up'],'Follow-Up':['Initial Contact Made','Follow-Up Call (4 days)','Annual Review Scheduled']}
+};
+
+function uid(){return Math.random().toString(36).slice(2,10);}
 function save(){
-  localStorage.setItem('bw:cases',  JSON.stringify(cases));
-  localStorage.setItem('bw:tasks',  JSON.stringify(tasks));
-  localStorage.setItem('bw:meals',  JSON.stringify(meals));
-  localStorage.setItem('bw:events', JSON.stringify(events));
-  syncToSheets();
+  localStorage.setItem('bw:cases4',JSON.stringify(cases));
+  localStorage.setItem('bw:tasks',JSON.stringify(tasks));
+  localStorage.setItem('bw:meals',JSON.stringify(meals));
+  localStorage.setItem('bw:events',JSON.stringify(events));
+  localStorage.setItem('bw:school',JSON.stringify(school));
+  localStorage.setItem('bw:expanded',JSON.stringify(expandedCards));
 }
-function fmtDate(d){ return d.toISOString().slice(0,10); }
-const today = fmtDate(new Date());
+function fmtDate(d){return d.toISOString().slice(0,10);}
+function showToast(msg,ok=true){const t=document.getElementById('toast');t.textContent=msg;t.className=ok?'':'error';t.style.display='block';setTimeout(()=>t.style.display='none',3200);}
 
-// ═══════════════════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════════════════
-function showToast(msg, ok=true){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = ok ? '' : 'error';
-  t.style.display = 'block';
-  setTimeout(()=>t.style.display='none', 3200);
+// ═══════════════════════════════════════
+// USER
+// ═══════════════════════════════════════
+function setUser(u){
+  activeUser=u;
+  document.getElementById('btnMartice').className='user-btn'+(u==='martice'?' active-martice':'');
+  document.getElementById('btnChloe').className='user-btn'+(u==='chloe'?' active-chloe':'');
+  document.getElementById('btnAll').className='user-btn'+(u==='all'?' active-all':'');
+  caseFilter='All'; renderCases();
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// TAB SWITCHING
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
 function switchTab(tab){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('panel-'+tab).classList.add('active');
-  const idx = ['cases','tasks','meals','calendar'].indexOf(tab);
-  document.querySelectorAll('.nav-btn')[idx].classList.add('active');
-  if(tab==='cases')    renderCases();
-  if(tab==='tasks')    renderTasks();
-  if(tab==='meals')    renderMeals();
+  ['cases','tasks','meals','calendar','school'].forEach((t,i)=>{ if(t===tab) document.querySelectorAll('.nav-btn')[i].classList.add('active'); });
+  if(tab==='cases') renderCases();
+  if(tab==='tasks') renderTasks();
+  if(tab==='meals') renderMeals();
   if(tab==='calendar') renderCalendar();
+  if(tab==='school') renderSchool();
 }
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 
-// ═══════════════════════════════════════════════════════════════════
-// MODAL HELPERS
-// ═══════════════════════════════════════════════════════════════════
-function openModal(id){ document.getElementById(id).classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
-});
-
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // GOOGLE CALENDAR
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
+const CLIENT_ID='490515181027-dmq3c7m52ml221r927mj78mra88pal94.apps.googleusercontent.com';
 function signInGoogle(){
-  const CLIENT_ID = '490515181027-dmq3c7m52ml221r927mj78mra88pal94.apps.googleusercontent.com';
-  if(!CLIENT_ID){ showToast('To enable Google Calendar sync, add your Client ID in the code.', false); return; }
-  const params = new URLSearchParams({
-    client_id:CLIENT_ID, redirect_uri:location.href.split('#')[0],
-    response_type:'token', scope:'https://www.googleapis.com/auth/calendar.events'
-  });
-  const win = window.open('https://accounts.google.com/o/oauth2/v2/auth?'+params,'gcal','width=500,height=600');
-  const timer = setInterval(()=>{
-    try{
-      const hash = win.location.hash;
-      if(hash && hash.includes('access_token')){
-        clearInterval(timer); win.close();
-        gToken = new URLSearchParams(hash.slice(1)).get('access_token');
-        document.getElementById('gcalBtn').textContent='✓ GCal Connected';
-        document.getElementById('gcalBtn').classList.add('connected');
-        showToast('Google Calendar connected!');
-      }
-    }catch(e){}
-  },500);
+  const p=new URLSearchParams({client_id:CLIENT_ID,redirect_uri:location.href.split('#')[0],response_type:'token',scope:'https://www.googleapis.com/auth/calendar.events'});
+  const w=window.open('https://accounts.google.com/o/oauth2/v2/auth?'+p,'gcal','width=500,height=600');
+  const t=setInterval(()=>{try{const h=w.location.hash;if(h&&h.includes('access_token')){clearInterval(t);w.close();gToken=new URLSearchParams(h.slice(1)).get('access_token');document.getElementById('gcalBtn').textContent='✓ GCal Connected';document.getElementById('gcalBtn').classList.add('connected');showToast('Google Calendar connected!');}}catch(e){}},500);
+}
+async function pushToGCal(title,dateStr,desc=''){
+  if(!gToken){showToast('Connect Google Calendar first.',false);return;}
+  const s=`${dateStr||today}T09:00:00`,e=`${dateStr||today}T10:00:00`;
+  const r=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events',{method:'POST',headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},body:JSON.stringify({summary:title,description:desc,start:{dateTime:s,timeZone:'America/Los_Angeles'},end:{dateTime:e,timeZone:'America/Los_Angeles'}})});
+  showToast(r.ok?`"${title}" added to Google Calendar!`:'Calendar push failed.',r.ok);
+}
+function showSyncHelp(){openModal('syncModal');}
+function saveSyncConfig(){closeModal('syncModal');showToast('Sync config saved!');}
+
+// ═══════════════════════════════════════
+// WIZARD
+// ═══════════════════════════════════════
+function goStep(n){document.querySelectorAll('.wizard-step').forEach(s=>s.classList.remove('active'));document.getElementById('ws'+n).classList.add('active');}
+
+function selectOwner(o){
+  wOwner=o;
+  document.getElementById('ws2Owner').textContent=o==='martice'?'🟠 Martice — Cemetery & Pre-Need':'🟣 Chloe — Funeral Director';
+  document.getElementById('marticeTypes').style.display=o==='martice'?'block':'none';
+  document.getElementById('chloeDisp').style.display=o==='chloe'?'block':'none';
+  goStep(2);
+}
+function selectDisp(d){
+  wDisp=d;
+  if(wOwner==='martice'){wServiceType='';populateCaseForm();goStep(4);}
+  else{
+    document.getElementById('ws3Disp').textContent=(d==='Cremation'?'🔥':'⚰️')+' '+d;
+    const types=d==='Cremation'?['AOC / Direct Cremation','Traditional Service','Memorial Service','I.D. Viewing','Viewing & Service']:['Traditional Burial Service','Graveside Service','Memorial Service','Direct Burial / No Service'];
+    document.getElementById('serviceTypeList').innerHTML=types.map(st=>`<button class="disp-btn" onclick="selectServiceType('${st}')">${st}<div class="disp-sub">Contact reminder every ${getRDays(st)} days</div></button>`).join('');
+    goStep(3);
+  }
+}
+function selectServiceType(st){wServiceType=st;populateCaseForm();goStep(4);}
+
+function populateCaseForm(){
+  const rDays=getRDays(wServiceType);
+  document.getElementById('ws4Tags').innerHTML=
+    `<span class="${wOwner==='martice'?'owner-tag-martice':'owner-tag-chloe'}">${wOwner==='martice'?'Martice':'Chloe'}</span>
+     <span class="tag">${wDisp}</span>${wServiceType?`<span class="tag">${wServiceType}</span>`:''}
+     ${wOwner==='chloe'&&wServiceType?`<span class="tag" style="background:#6b4fa022;color:var(--purple);border-color:#6b4fa044">📞 every ${rDays}d</span>`:''}`;
+  document.getElementById('chloePaySection').style.display=wOwner==='chloe'?'block':'none';
+  document.getElementById('marticePaySection').style.display=wOwner==='martice'?'block':'none';
+  ['cDecedent','cDisc','cPassare','cPassareLink','cServiceDate','cServiceTime','cNotes','cUrn','cCasket','cPayNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('cStatus').value='New';
+  ['cPayment','cPayStatus','mPayment','mPayStatus'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('caseId').value='';
+  document.getElementById('miscList').innerHTML='';
+  document.getElementById('caseSaveBtn').style.background=wOwner==='chloe'?'var(--purple)':'var(--orange)';
 }
 
-async function pushToGCal(title, dateStr, desc=''){
-  if(!gToken){ showToast('Connect Google Calendar first.', false); return; }
-  const start = `${dateStr||today}T09:00:00`;
-  const end   = `${dateStr||today}T10:00:00`;
-  const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events',{
-    method:'POST',
-    headers:{Authorization:`Bearer ${gToken}`,'Content-Type':'application/json'},
-    body:JSON.stringify({summary:title,description:desc,
-      start:{dateTime:start,timeZone:'America/Los_Angeles'},
-      end:{dateTime:end,timeZone:'America/Los_Angeles'}})
-  });
-  showToast(res.ok?`"${title}" added to Google Calendar!`:'Calendar push failed.', res.ok);
+function addMiscItem(val=''){
+  const list=document.getElementById('miscList'),id='misc-'+uid(),div=document.createElement('div');
+  div.className='misc-item';div.id=id;
+  div.innerHTML=`<input type="text" placeholder="e.g. Extra death cert requested, flowers from sister…" value="${val}"/><button onclick="document.getElementById('${id}').remove()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:13px;flex-shrink:0">✕</button>`;
+  list.appendChild(div);
+}
+function getMiscItems(){return Array.from(document.querySelectorAll('#miscList .misc-item input')).map(i=>i.value.trim()).filter(Boolean);}
+
+// ═══════════════════════════════════════
+// QUICK STATUS UPDATE (on card)
+// ═══════════════════════════════════════
+function quickStatus(caseId, val){
+  const c=cases.find(x=>x.id===caseId);
+  if(c){c.status=val;save();renderCases();}
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// GOOGLE SHEETS SYNC (optional — fills from syncModal config)
-// ═══════════════════════════════════════════════════════════════════
-let sheetConfig = JSON.parse(localStorage.getItem('bw:sheetConfig')||'null');
-function showSyncHelp(){ openModal('syncModal'); }
-function saveSyncConfig(){
-  sheetConfig = { sheetId: document.getElementById('sheetId').value.trim(), apiKey: document.getElementById('apiKey').value.trim() };
-  localStorage.setItem('bw:sheetConfig', JSON.stringify(sheetConfig));
-  closeModal('syncModal');
-  showToast('Sync config saved! Data will now sync to your shared Sheet.');
-}
-async function syncToSheets(){
-  if(!sheetConfig) return;
-  // Writes a summary row — extend as needed for full two-way sync
-  // Full bidirectional sync requires a backend; this pushes a timestamped JSON snapshot
-  try {
-    const payload = {cases, tasks, meals, events, updated: new Date().toISOString()};
-    // This is a placeholder — real Sheets write requires OAuth, not API key alone
-    // For full sync, host a small Google Apps Script Web App (free) and call it here
-    console.log('Sync payload ready:', payload);
-  } catch(e) { console.warn('Sheet sync skipped:', e); }
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// CASES
-// ═══════════════════════════════════════════════════════════════════
-function renderCases(){
-  // Filters
-  const bar = document.getElementById('caseFilters');
-  const allFilters = ['All', ...CASE_STATUSES];
-  const counts = {};
-  CASE_STATUSES.forEach(s=>counts[s]=cases.filter(c=>c.status===s).length);
-  bar.innerHTML = allFilters.map(f=>{
-    const cnt = f==='All'?cases.length:counts[f];
-    const col = f==='All'?'#c8a96e':CASE_COLORS[f];
-    return `<button class="filter-chip${caseFilter===f?' active':''}" onclick="caseFilter='${f}';renderCases()" style="${caseFilter===f?`background:${col}22;border-color:${col};color:${col}`:''}">
-      <span class="count-badge" style="background:${col}">${cnt}</span>${f}</button>`;
-  }).join('') + `<div class="spacer"></div><button class="btn-primary" onclick="openCaseModal()">+ New Case</button>`;
-
-  const list = document.getElementById('caseList');
-  const filtered = caseFilter==='All' ? cases : cases.filter(c=>c.status===caseFilter);
-  if(!filtered.length){ list.innerHTML=`<div class="empty"><div class="empty-icon">⚫</div>No cases in this category.</div>`; return; }
-  list.innerHTML = filtered.map(c=>{
-    const col = CASE_COLORS[c.status];
-    return `<div class="card" style="border-color:${col}33">
-      <div class="card-body">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span class="card-title">${c.name} Family</span>
-          ${c.caseNo?`<span style="color:var(--muted);font-size:12px">#${c.caseNo}</span>`:''}
-          <span class="status-badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${c.status}</span>
-          <span class="tag">${c.type}</span>
-        </div>
-        ${c.nextStep?`<div style="margin-top:6px;color:var(--goldL);font-size:13px"><span style="color:var(--muted);margin-right:6px">Next:</span>${c.nextStep}</div>`:''}
-        ${c.dueDate?`<div class="card-meta">Due: ${c.dueDate}</div>`:''}
-        ${c.notes?`<div class="card-meta" style="font-style:italic">${c.notes}</div>`:''}
-      </div>
-      <div class="card-actions">
-        ${c.dueDate?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('Case: ${c.name} Family — ${(c.nextStep||c.status).replace(/'/g,"\\'")}','${c.dueDate}','${(c.notes||'').replace(/'/g,"\\'")}')">📅 Sync</button>`:''}
-        <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="openCaseModal('${c.id}')">Edit</button>
-        <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteCase('${c.id}')">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
+// ═══════════════════════════════════════
+// SAVE CASE
+// ═══════════════════════════════════════
 function openCaseModal(id){
-  const c = id ? cases.find(x=>x.id===id) : null;
-  document.getElementById('caseModalTitle').textContent = c ? 'Edit Case' : 'New Funeral Case';
-  document.getElementById('caseId').value    = c?.id||'';
-  document.getElementById('cName').value     = c?.name||'';
-  document.getElementById('cCaseNo').value   = c?.caseNo||'';
-  document.getElementById('cType').value     = c?.type||'Funeral';
-  document.getElementById('cStatus').value   = c?.status||'New';
-  document.getElementById('cNextStep').value = c?.nextStep||'';
-  document.getElementById('cDue').value      = c?.dueDate||'';
-  document.getElementById('cNotes').value    = c?.notes||'';
+  wOwner='';wDisp='';wServiceType='';
+  if(id){
+    const c=cases.find(x=>x.id===id);
+    wOwner=c.owner;wDisp=c.disp;wServiceType=c.serviceType||'';
+    populateCaseForm();
+    document.getElementById('caseId').value=id;
+    document.getElementById('cDecedent').value=c.decedent||'';
+    document.getElementById('cDisc').value=c.disc||'';
+    document.getElementById('cPassare').value=c.passare||'';
+    document.getElementById('cPassareLink').value=c.passareLink||'';
+    document.getElementById('cServiceDate').value=c.serviceDate||'';
+    document.getElementById('cServiceTime').value=c.serviceTime||'';
+    document.getElementById('cStatus').value=c.status||'New';
+    document.getElementById('cNotes').value=c.notes||'';
+    document.getElementById('miscList').innerHTML='';
+    (c.misc||[]).forEach(m=>addMiscItem(m));
+    if(wOwner==='chloe'){
+      document.getElementById('cPayment').value=c.payment||'';
+      document.getElementById('cPayStatus').value=c.payStatus||'';
+      document.getElementById('cPayNotes').value=c.payNotes||'';
+      document.getElementById('cUrn').value=c.urn||'';
+      document.getElementById('cCasket').value=c.casket||'';
+    } else {
+      const mp=document.getElementById('mPayment'),ms=document.getElementById('mPayStatus');
+      if(mp)mp.value=c.payment||'';if(ms)ms.value=c.payStatus||'';
+    }
+    document.getElementById('caseBackBtn').style.display='none';
+    document.getElementById('caseModalTitle').textContent='Edit Case';
+    goStep(4);
+  } else {
+    document.getElementById('caseBackBtn').style.display='';
+    document.getElementById('caseModalTitle').textContent='New Case';
+    goStep(1);
+  }
   openModal('caseModal');
 }
 
 function saveCase(){
-  const name = document.getElementById('cName').value.trim();
-  if(!name){ showToast('Family name is required.', false); return; }
-  const id = document.getElementById('caseId').value || uid();
-  const obj = {
-    id, name, caseNo:document.getElementById('cCaseNo').value,
-    type:document.getElementById('cType').value, status:document.getElementById('cStatus').value,
-    nextStep:document.getElementById('cNextStep').value, dueDate:document.getElementById('cDue').value,
-    notes:document.getElementById('cNotes').value, createdAt: new Date().toISOString()
-  };
-  const idx = cases.findIndex(c=>c.id===id);
-  if(idx>=0) cases[idx]=obj; else cases.push(obj);
-  save(); closeModal('caseModal'); renderCases();
+  const decedent=document.getElementById('cDecedent').value.trim();
+  if(!decedent){showToast('Decedent/Family name is required.',false);return;}
+  const id=document.getElementById('caseId').value||uid();
+  const existing=cases.find(c=>c.id===id);
+  let checklist=existing?.checklist||{};
+  if(!existing){
+    const tmpl=wOwner==='chloe'?(CHLOE_CHECKLISTS[wDisp]||{}):(MARTICE_CHECKLISTS[wDisp]||{});
+    Object.entries(tmpl).forEach(([g,items])=>{checklist[g]=items.map(text=>({text,done:false,na:false,doneAt:null}));});
+    checklist['Misc']=[{text:'(Add misc items as needed)',done:false,na:false,doneAt:null}];
+  }
+  const isChloe=wOwner==='chloe';
+  const obj={id,owner:wOwner,disp:wDisp,serviceType:wServiceType,decedent,
+    disc:document.getElementById('cDisc').value,passare:document.getElementById('cPassare').value,
+    passareLink:document.getElementById('cPassareLink').value,serviceDate:document.getElementById('cServiceDate').value,
+    serviceTime:document.getElementById('cServiceTime').value,status:document.getElementById('cStatus').value,
+    payment:isChloe?document.getElementById('cPayment').value:(document.getElementById('mPayment')?.value||''),
+    payStatus:isChloe?document.getElementById('cPayStatus').value:(document.getElementById('mPayStatus')?.value||''),
+    payNotes:isChloe?document.getElementById('cPayNotes').value:'',
+    notes:document.getElementById('cNotes').value,
+    urn:isChloe?document.getElementById('cUrn').value:'',casket:isChloe?document.getElementById('cCasket').value:'',
+    misc:getMiscItems(),checklist,touchpoints:existing?.touchpoints||[],
+    createdAt:existing?.createdAt||new Date().toISOString(),lastContact:existing?.lastContact||null,
+    reminderDays:getRDays(wServiceType)};
+  const idx=cases.findIndex(c=>c.id===id);
+  if(idx>=0)cases[idx]=obj;else cases.push(obj);
+  save();closeModal('caseModal');renderCases();showToast('Case saved!');
+}
+function deleteCase(id){if(confirm('Remove this case?')){cases=cases.filter(c=>c.id!==id);delete expandedCards[id];save();renderCases();}}
+
+// ═══════════════════════════════════════
+// CHECKLIST & TOUCHPOINTS
+// ═══════════════════════════════════════
+function toggleCheckItem(caseId,group,idx){
+  const c=cases.find(x=>x.id===caseId);if(!c)return;
+  const item=c.checklist[group][idx];
+  if(item.na) return; // can't check an N/A item
+  item.done=!item.done;item.doneAt=item.done?new Date().toISOString():null;
+  if(item.done&&item.text.toLowerCase().includes('contact'))c.lastContact=new Date().toISOString();
+  save();renderCaseCard(c);
 }
 
-function deleteCase(id){ if(confirm('Remove this case?')){ cases=cases.filter(c=>c.id!==id); save(); renderCases(); } }
+function toggleNAItem(caseId,group,idx){
+  const c=cases.find(x=>x.id===caseId);if(!c)return;
+  const item=c.checklist[group][idx];
+  item.na=!item.na;
+  if(item.na){item.done=false;item.doneAt=null;} // un-check if marking N/A
+  save();renderCaseCard(c);
+}
 
-// ═══════════════════════════════════════════════════════════════════
+function addChecklistItem(caseId,group){
+  const inputId='newitem-'+caseId+'-'+group.replace(/\W/g,'');
+  const input=document.getElementById(inputId);
+  if(!input) return;
+  const text=input.value.trim();if(!text) return;
+  const c=cases.find(x=>x.id===caseId);if(!c)return;
+  if(!c.checklist[group]) c.checklist[group]=[];
+  c.checklist[group].push({text,done:false,na:false,doneAt:null});
+  save();renderCaseCard(c);
+}
+
+function deleteChecklistItem(caseId,group,idx){
+  const c=cases.find(x=>x.id===caseId);if(!c)return;
+  c.checklist[group].splice(idx,1);
+  save();renderCaseCard(c);
+}
+function addTouchpoint(caseId){
+  const ta=document.getElementById('tp-'+caseId);const text=ta.value.trim();if(!text)return;
+  const c=cases.find(x=>x.id===caseId);if(!c)return;
+  c.touchpoints.unshift({text,date:new Date().toISOString()});c.lastContact=new Date().toISOString();
+  save();ta.value='';renderCaseCard(c);
+}
+function renderCaseCard(c){const el=document.getElementById('ccard-'+c.id);if(el)el.outerHTML=buildCaseCardHTML(c);}
+function toggleCard(id){
+  expandedCards[id]=!expandedCards[id];
+  save();
+  const body=document.getElementById('cbody-'+id);
+  if(body)body.classList.toggle('open',!!expandedCards[id]);
+}
+
+// ═══════════════════════════════════════
+// PRINT CASE SUMMARY
+// ═══════════════════════════════════════
+function printCase(id){
+  const c=cases.find(x=>x.id===id);if(!c)return;
+  let total=0,done=0;
+  Object.values(c.checklist||{}).forEach(items=>{items.forEach(i=>{if(!i.na){total++;if(i.done)done++;}});});
+  let checkHTML='';
+  Object.entries(c.checklist||{}).forEach(([group,items])=>{
+    checkHTML+=`<h4 style="margin:12px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#555">${group}</h4>`;
+    items.forEach(item=>{
+      if(item.na){checkHTML+=`<div style="font-size:12px;color:#bbb;font-style:italic;margin-bottom:3px">— ${item.text} (N/A)</div>`;return;}
+      checkHTML+=`<div style="display:flex;gap:8px;margin-bottom:4px;font-size:13px"><span style="color:${item.done?'green':'#aaa'}">${item.done?'☑':'☐'}</span><span style="text-decoration:${item.done?'line-through':'none'};color:${item.done?'#888':'#222'}">${item.text}</span>${item.doneAt?`<span style="color:#aaa;font-size:11px;margin-left:auto">${new Date(item.doneAt).toLocaleDateString()}</span>`:''}</div>`;
+    });
+  });
+  let tpHTML=c.touchpoints.map(tp=>`<div style="margin-bottom:8px;padding:8px 12px;border-left:3px solid #c8a96e;background:#f9f6f0"><div style="font-size:10px;color:#888;margin-bottom:2px">${new Date(tp.date).toLocaleString()}</div><div style="font-size:13px">${tp.text}</div></div>`).join('');
+  const pa=document.getElementById('printArea');
+  pa.innerHTML=`<div style="max-width:750px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #1a2744">
+      <div><div style="font-size:22px;font-weight:700;color:#1a2744">${c.decedent}</div><div style="font-size:13px;color:#555;margin-top:4px">${c.owner==='martice'?'Martice — Cemetery/Pre-Need':'Chloe — Funeral Director'} | ${c.disp}${c.serviceType?' / '+c.serviceType:''}</div></div>
+      <div style="text-align:right;font-size:12px;color:#555"><div>Printed: ${new Date().toLocaleDateString()}</div><div>Status: <strong>${c.status}</strong></div><div>Progress: ${done}/${total} (${total?Math.round(done/total*100):0}%)</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;font-size:13px">
+      ${c.disc?`<div><strong>Metal Disc #:</strong> ${c.disc}</div>`:''}
+      ${c.passare?`<div><strong>Passare Case #:</strong> ${c.passare}</div>`:''}
+      ${c.serviceDate?`<div><strong>Service Date:</strong> ${c.serviceDate}${c.serviceTime?' @ '+c.serviceTime:''}</div>`:''}
+      ${c.payment?`<div><strong>Payment:</strong> ${c.payment}${c.payStatus?' — '+c.payStatus:''}</div>`:''}
+      ${c.urn?`<div><strong>Urn/Container:</strong> ${c.urn}</div>`:''}
+      ${c.casket?`<div><strong>Casket:</strong> ${c.casket}</div>`:''}
+    </div>
+    ${c.notes?`<div style="background:#f5f5f5;padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:16px;font-style:italic">${c.notes}</div>`:''}
+    ${c.misc&&c.misc.length?`<div style="margin-bottom:16px"><strong style="font-size:12px;text-transform:uppercase;letter-spacing:1px">Misc</strong><ul style="margin-top:6px;font-size:13px">${c.misc.map(m=>`<li>${m}</li>`).join('')}</ul></div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div><h3 style="font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#1a2744">Checklist</h3>${checkHTML}</div>
+      <div><h3 style="font-size:13px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;color:#1a2744">Touchpoints</h3>${tpHTML||'<p style="color:#aaa;font-size:13px">No touchpoints logged.</p>'}</div>
+    </div>
+  </div>`;
+  window.print();
+}
+
+// ═══════════════════════════════════════
+// BUILD CASE CARD
+// ═══════════════════════════════════════
+function buildCaseCardHTML(c){
+  const col=SC[c.status]||'#8fa3b8';
+  const ownerTag=c.owner==='martice'?'<span class="owner-tag-martice">Martice</span>':'<span class="owner-tag-chloe">Chloe</span>';
+
+  // Progress — exclude N/A items from total
+  let total=0,done=0;
+  Object.values(c.checklist||{}).forEach(items=>{
+    items.forEach(i=>{ if(!i.na){total++; if(i.done) done++; } });
+  });
+  const pct=total?Math.round(done/total*100):0;
+
+  // Smart item-level reminders (Chloe only)
+  let smartAlertsHTML='';
+  if(c.owner==='chloe'){
+    const ageDays=Math.floor((Date.now()-new Date(c.createdAt))/(864e5));
+    const alerts=[];
+    // Flatten all items for easy lookup
+    const allItems=Object.values(c.checklist||{}).flat();
+    const isDone=text=>allItems.some(i=>i.text===text&&i.done);
+    const isNA=text=>allItems.some(i=>i.text===text&&i.na);
+    const check=(text,threshold,msg,severity='error')=>{
+      if(!isNA(text)&&!isDone(text)&&ageDays>=threshold) alerts.push({msg,severity});
+    };
+    // DC items — should be done within 1 day
+    check('DC Worksheet Signed & Uploaded',1,'DC Worksheet not signed/uploaded — case is '+ageDays+'d old');
+    check('Vitals Entered Into WHALES',1,'Vitals not entered in WHALES — case is '+ageDays+'d old');
+    check('Cremation Auth Signed & Uploaded',1,'Cremation Auth not signed — case is '+ageDays+'d old');
+    check('First Call Signed & Uploaded',1,'First Call not signed — case is '+ageDays+'d old');
+    // Urn/casket — warn after 2 days
+    check('Urn Ordered',2,'Urn not ordered — '+ageDays+'d since case opened','warn');
+    check('Casket Ordered/Delivered',2,'Casket not ordered — '+ageDays+'d since case opened','warn');
+    // Contract — warn after 2 days
+    check('Contract Signed/Uploaded',2,'Contract not signed — '+ageDays+'d since case opened','warn');
+    check('Contract Signed in Passare',2,'Passare contract not signed — '+ageDays+'d since case opened','warn');
+    // Family notification for cremation — 3 days
+    check('Family Notified of Cremation Date',3,'Family not notified of cremation date — '+ageDays+'d since case opened','warn');
+    // DC approved — 2 days
+    check('DC Approved',2,'DC not yet approved — '+ageDays+'d since case opened','warn');
+    // Arrangement recap — 1 day
+    check('Arrangement Recap in Passare',1,'Arrangement recap not in Passare — case is '+ageDays+'d old');
+    // Follow-up email — 1 day
+    check('Follow-Up Email to Family',1,'Follow-up email not sent — case is '+ageDays+'d old');
+    // Urn/keepsakes released — flag if service date has passed
+    if(c.serviceDate&&c.serviceDate<today&&!isDone('Urn/Keepsakes Released')&&!isNA('Urn/Keepsakes Released')){
+      alerts.push({msg:'Service date has passed — urn/keepsakes not yet released',severity:'error'});
+    }
+    if(alerts.length){
+      smartAlertsHTML=`<div style="margin-bottom:12px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:6px;font-weight:700">⚠ Smart Reminders</div>
+        ${alerts.map(a=>`<div class="smart-alert${a.severity==='warn'?' warn':''}">⚠ ${a.msg}</div>`).join('')}
+      </div>`;
+    }
+  }
+  const rDays=c.reminderDays||4;
+  let reminderHTML='';
+  if(c.lastContact){
+    const ds=Math.floor((Date.now()-new Date(c.lastContact))/(864e5));
+    if(ds>=rDays)reminderHTML=`<span class="reminder-badge">📞 Overdue ${ds}d (every ${rDays}d)</span>`;
+    else if(ds>=rDays-1)reminderHTML=`<span class="reminder-badge soon">📞 Due tomorrow</span>`;
+    else reminderHTML=`<span class="reminder-badge ok">✓ ${ds}d ago (next in ${rDays-ds}d)</span>`;
+  } else reminderHTML=`<span class="reminder-badge">📞 No contact logged</span>`;
+
+  let payHTML='';
+  if(c.payment){payHTML=`<span style="color:var(--muted);font-size:10px">💳 ${c.payment}</span>`;if(c.payStatus)payHTML+=` <span class="pay-status">${c.payStatus}</span>`;}
+
+  // Quick status select
+  const qsOpts=CASE_STATUSES.map(s=>`<option value="${s}"${c.status===s?' selected':''}>${s}</option>`).join('');
+  const qs=`<select class="quick-status" onclick="event.stopPropagation()" onchange="quickStatus('${c.id}',this.value)">${qsOpts}</select>`;
+
+  // Checklist HTML — NA-aware, editable (Chloe only)
+  const isChloeCase = c.owner==='chloe';
+  let checklistHTML='';
+  Object.entries(c.checklist||{}).forEach(([group,items])=>{
+    const groupKey=group.replace(/\W/g,'');
+    checklistHTML+=`<div class="checklist-group"><div class="checklist-group-title">${group}</div>`;
+    items.forEach((item,idx)=>{
+      const naClass=item.na?' na':'';
+      const doneClass=item.done?' checked':'';
+      checklistHTML+=`<div class="check-item${doneClass}${naClass}" onclick="toggleCheckItem('${c.id}','${group.replace(/'/g,"\\'")}',${idx})">
+        <div class="check-box${item.done?' done':''}">${item.done?'✓':''}</div>
+        <span class="check-label">${item.text}</span>
+        ${item.doneAt?`<span class="check-date">${new Date(item.doneAt).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>`:''}
+        ${isChloeCase?`<button class="na-btn${item.na?' active':''}" onclick="event.stopPropagation();toggleNAItem('${c.id}','${group.replace(/'/g,"\\'")}',${idx})" title="Mark as Not Applicable">${item.na?'undo N/A':'N/A'}</button>`:''}
+        ${isChloeCase?`<button onclick="event.stopPropagation();deleteChecklistItem('${c.id}','${group.replace(/'/g,"\\'")}',${idx})" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:10px;padding:0 2px;flex-shrink:0" title="Remove">✕</button>`:''}
+      </div>`;
+    });
+    // Add item row (Chloe only)
+    if(isChloeCase){
+      checklistHTML+=`<div class="add-check-row">
+        <input id="newitem-${c.id}-${groupKey}" placeholder="+ Add item…" onkeydown="if(event.key==='Enter')addChecklistItem('${c.id}','${group.replace(/'/g,"\\'")}')"/>
+        <button class="btn-green" style="padding:3px 9px;font-size:11px" onclick="addChecklistItem('${c.id}','${group.replace(/'/g,"\\'")}')">Add</button>
+      </div>`;
+    }
+    checklistHTML+='</div>';
+  });
+
+  // Progress label with N/A count
+  const naCount=Object.values(c.checklist||{}).flat().filter(i=>i.na).length;
+  const progressLabel=`${done}/${total} tasks (${pct}%)${naCount>0?` · ${naCount} N/A`:''}`;
+
+  // Misc
+  let miscHTML='';
+  if(c.misc&&c.misc.length){
+    miscHTML=`<div style="margin-top:10px;padding:10px 12px;background:#ffffff05;border-radius:8px"><div class="checklist-group-title" style="margin-bottom:6px">Misc / Additional</div>`;
+    c.misc.forEach(m=>{miscHTML+=`<div style="font-size:12px;color:var(--goldL);padding:2px 0">• ${m}</div>`;});
+    miscHTML+='</div>';
+  }
+
+  // Touchpoints
+  let tpHTML=`<div>`;
+  if(c.touchpoints&&c.touchpoints.length){
+    tpHTML+=c.touchpoints.map(tp=>`<div class="touchpoint-entry"><div class="touchpoint-date">${new Date(tp.date).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}</div><div class="touchpoint-text">${tp.text}</div></div>`).join('');
+  } else tpHTML+=`<div style="color:var(--muted);font-size:12px;font-style:italic;margin-bottom:8px">No touchpoints yet.</div>`;
+  tpHTML+=`<div class="add-touchpoint"><textarea id="tp-${c.id}" placeholder="Log a call, update, or note…"></textarea><button class="btn-green" onclick="addTouchpoint('${c.id}')">+ Log</button></div></div>`;
+
+  const passareBtn=c.passareLink?`<a href="${c.passareLink}" target="_blank" style="background:#8fa3b818;color:var(--muted);border:1px solid #8fa3b844;border-radius:6px;padding:3px 9px;font-size:10px;text-decoration:none;font-family:'DM Sans',sans-serif;white-space:nowrap">🔗 Passare</a>`:'';
+  const isOpen=!!expandedCards[c.id];
+
+  return `<div class="case-card" id="ccard-${c.id}" style="border-color:${col}33">
+    <div class="case-card-header" onclick="toggleCard('${c.id}')">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:5px">
+          <span class="case-card-title">${c.decedent}</span>
+          ${ownerTag}<span class="tag">${c.disp}</span>${c.serviceType?`<span class="tag">${c.serviceType}</span>`:''}
+          ${qs}
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          ${c.disc?`<span style="color:var(--muted);font-size:10px">Disc: ${c.disc}</span>`:''}
+          ${c.passare?`<span style="color:var(--muted);font-size:10px">Case: ${c.passare}</span>`:''}
+          ${c.serviceDate?`<span style="color:var(--goldL);font-size:10px">📅 ${c.serviceDate}${c.serviceTime?' @ '+c.serviceTime:''}</span>`:''}
+          ${payHTML} ${reminderHTML}
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div style="color:var(--muted);font-size:10px;margin-top:3px">${progressLabel}</div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0;flex-direction:column;align-items:flex-end">
+        ${c.serviceDate?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="event.stopPropagation();pushToGCal('${c.decedent} — ${c.disp}','${c.serviceDate}','')">📅</button>`:''}
+        <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="event.stopPropagation();openCaseModal('${c.id}')">Edit</button>
+        <button class="btn-sm" style="background:#2e7d5718;color:var(--green);border-color:#2e7d5744" onclick="event.stopPropagation();printCase('${c.id}')">🖨️</button>
+        <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="event.stopPropagation();deleteCase('${c.id}')">✕</button>
+        ${passareBtn}
+      </div>
+    </div>
+    <div class="case-card-body${isOpen?' open':''}" id="cbody-${c.id}">
+      ${smartAlertsHTML}
+      ${c.urn||c.casket||c.payNotes?`<div style="display:flex;gap:18px;flex-wrap:wrap;padding:11px 0;border-bottom:1px solid #ffffff0a;margin-bottom:11px">
+        ${c.payNotes?`<div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Payment Notes</div><div style="font-size:12px;margin-top:2px;color:var(--goldL)">${c.payNotes}</div></div>`:''}
+        ${c.urn?`<div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Urn / Container</div><div style="font-size:12px;margin-top:2px">${c.urn}</div></div>`:''}
+        ${c.casket?`<div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Casket</div><div style="font-size:12px;margin-top:2px">${c.casket}</div></div>`:''}
+      </div>`:''}
+      ${c.notes?`<div style="color:var(--muted);font-size:12px;font-style:italic;margin-bottom:12px;background:#ffffff05;border-radius:8px;padding:9px 13px">${c.notes}</div>`:''}
+      ${miscHTML}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:12px">
+        <div><div class="checklist-group-title" style="margin-bottom:8px">CHECKLIST</div>${checklistHTML}</div>
+        <div><div class="checklist-group-title" style="margin-bottom:8px">TOUCHPOINTS / LOG</div>${tpHTML}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+// URGENCY SORT
+// ═══════════════════════════════════════
+function urgencyScore(c){
+  if(c.status==='Complete') return 9999;
+  const rDays=c.reminderDays||4;
+  if(!c.lastContact) return 0;
+  const ds=Math.floor((Date.now()-new Date(c.lastContact))/(864e5));
+  if(ds>=rDays) return ds-rDays; // overdue: lower = more urgent
+  return 100+(rDays-ds); // not overdue: higher
+}
+
+// ═══════════════════════════════════════
+// DUE TODAY BANNER
+// ═══════════════════════════════════════
+function renderDueBanner(){
+  const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+  const tomorrowStr=fmtDate(tomorrow);
+  const due=cases.filter(c=>c.serviceDate&&(c.serviceDate===today||c.serviceDate===tomorrowStr)&&c.status!=='Complete');
+  const banner=document.getElementById('dueBanner');
+  const items=document.getElementById('dueItems');
+  if(!due.length){banner.classList.remove('show');return;}
+  banner.classList.add('show');
+  items.innerHTML=due.map(c=>`<div class="due-item">
+    <span class="${c.owner==='martice'?'owner-tag-martice':'owner-tag-chloe'}" style="font-size:9px">${c.owner==='martice'?'Martice':'Chloe'}</span>
+    <span>${c.decedent} — ${c.disp}${c.serviceType?' / '+c.serviceType:''}</span>
+    <span style="color:var(--orange);font-size:11px;margin-left:auto">${c.serviceDate===today?'TODAY':'TOMORROW'} ${c.serviceTime?'@ '+c.serviceTime:''}</span>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// RENDER CASES
+// ═══════════════════════════════════════
+function renderCases(){
+  renderDueBanner();
+  const search=(document.getElementById('caseSearch')?.value||'').toLowerCase().trim();
+  const pool = activeUser==='all' ? cases : cases.filter(c=>c.owner===activeUser);
+  const bar=document.getElementById('caseFilters');
+  const counts={};CASE_STATUSES.forEach(s=>counts[s]=pool.filter(c=>c.status===s).length);
+
+  let addBtns='';
+  if(activeUser==='martice'||activeUser==='all') addBtns+=`<button class="btn-primary" onclick="openCaseModal_owner('martice')">+ Martice Case</button>`;
+  if(activeUser==='chloe'||activeUser==='all')   addBtns+=`<button class="btn-chloe" onclick="openCaseModal_owner('chloe')" style="margin-left:4px">+ Chloe Case</button>`;
+  if(activeUser==='martice') addBtns=`<button class="btn-primary" onclick="openCaseModal()">+ New Case</button>`;
+  if(activeUser==='chloe')   addBtns=`<button class="btn-chloe" onclick="openCaseModal()">+ New Case</button>`;
+
+  bar.innerHTML=['All',...CASE_STATUSES].map(f=>{
+    const cnt=f==='All'?pool.length:counts[f];
+    const col=f==='All'?'#c8a96e':SC[f];
+    return `<button class="filter-chip${caseFilter===f?' active':''}" onclick="caseFilter='${f}';renderCases()" style="${caseFilter===f?`background:${col}22;border-color:${col};color:${col}`:''}"><span class="count-badge" style="background:${col}">${cnt}</span>${f}</button>`;
+  }).join('')+`<div class="spacer"></div>`+addBtns;
+
+  let filtered=caseFilter==='All'?pool:pool.filter(c=>c.status===caseFilter);
+  if(search) filtered=filtered.filter(c=>(c.decedent||'').toLowerCase().includes(search)||(c.passare||'').toLowerCase().includes(search)||(c.disc||'').toLowerCase().includes(search));
+  // Sort by urgency
+  filtered=[...filtered].sort((a,b)=>urgencyScore(a)-urgencyScore(b));
+
+  const list=document.getElementById('caseList');
+  if(!filtered.length){
+    const who=activeUser==='all'?'anyone':activeUser==='martice'?'Martice':'Chloe';
+    list.innerHTML=`<div class="empty"><div class="empty-icon">${activeUser==='chloe'?'⚱️':'🏛️'}</div>${search?'No cases match your search.':'No '+(caseFilter==='All'?'':caseFilter+' ')+'cases for '+who+'.'}</div>`;
+    return;
+  }
+  list.innerHTML=filtered.map(buildCaseCardHTML).join('');
+}
+
+function openCaseModal_owner(owner){
+  // Pre-select owner in wizard
+  wOwner=owner; wDisp=''; wServiceType='';
+  document.getElementById('caseBackBtn').style.display='';
+  document.getElementById('caseModalTitle').textContent='New Case';
+  goStep(1);
+  // Auto-click owner
+  setTimeout(()=>selectOwner(owner),50);
+  openModal('caseModal');
+}
+
+// ═══════════════════════════════════════
 // TASKS
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
 function renderTasks(){
-  const cats = ['All','Work','Personal','Home','Errand'];
-  const bar = document.getElementById('taskFilters');
-  bar.innerHTML = cats.map(c=>`<button class="filter-chip${taskFilter===c?' active':''}" onclick="taskFilter='${c}';renderTasks()">${c}</button>`).join('')
-    + `<div class="spacer"></div><button class="btn-primary" onclick="openTaskModal()">+ Add Task</button>`;
-
-  const filtered = taskFilter==='All' ? tasks : tasks.filter(t=>t.cat===taskFilter);
-  const open_ = filtered.filter(t=>!t.done);
-  const done_ = filtered.filter(t=>t.done);
-  const list  = document.getElementById('taskList');
-
-  if(!open_.length && !done_.length){ list.innerHTML=`<div class="empty"><div class="empty-icon">✓</div>No tasks yet — add one above!</div>`; return; }
-
-  const taskRow = t => {
-    const pc = PRIO_COLORS[t.priority];
-    return `<div class="card" style="border-color:${pc}22;opacity:${t.done?.5:1}">
+  const cats=['All','Work','Personal','Home','Errand'];
+  const bar=document.getElementById('taskFilters');
+  bar.innerHTML=cats.map(c=>`<button class="filter-chip${taskFilter===c?' active':''}" onclick="taskFilter='${c}';renderTasks()">${c}</button>`).join('')+`<div class="spacer"></div><button class="btn-primary" onclick="openTaskModal()">+ Add Task</button>`;
+  const filtered=taskFilter==='All'?tasks:tasks.filter(t=>t.cat===taskFilter);
+  const open_=filtered.filter(t=>!t.done),done_=filtered.filter(t=>t.done);
+  const list=document.getElementById('taskList');
+  if(!open_.length&&!done_.length){list.innerHTML=`<div class="empty"><div class="empty-icon">✓</div>No tasks yet.</div>`;return;}
+  const tr=t=>{const pc=PC[t.priority];
+    return `<div style="background:var(--navyL);border-radius:10px;padding:11px 15px;margin-bottom:8px;border:1px solid ${pc}22;display:flex;gap:11px;align-items:flex-start;opacity:${t.done?.45:1}">
       <button class="check-circle${t.done?' done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</button>
-      <div class="card-body">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span style="font-weight:500;font-size:14px;text-decoration:${t.done?'line-through':'none'};color:${t.done?'var(--muted)':'var(--white)'}">${t.text}</span>
-          <span class="priority-badge" style="background:${pc}22;color:${pc}">${t.priority.toUpperCase()}</span>
+      <div style="flex:1">
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <span style="font-weight:500;font-size:13px;text-decoration:${t.done?'line-through':'none'};color:${t.done?'var(--muted)':'var(--white)'}">${t.text}</span>
+          <span style="background:${pc}22;color:${pc};font-size:10px;font-weight:700;border-radius:99px;padding:1px 7px">${t.priority.toUpperCase()}</span>
           <span class="tag">${t.cat}</span>
         </div>
-        ${t.dueDate?`<div class="card-meta">Due: ${t.dueDate}</div>`:''}
-        ${t.notes?`<div class="card-meta" style="font-style:italic">${t.notes}</div>`:''}
+        ${t.dueDate?`<div style="color:var(--muted);font-size:11px;margin-top:3px">Due: ${t.dueDate}</div>`:''}
+        ${t.notes?`<div style="color:var(--muted);font-size:11px;margin-top:3px;font-style:italic">${t.notes}</div>`:''}
       </div>
-      <div class="card-actions">
-        ${t.dueDate?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('${t.text.replace(/'/g,"\\'")}','${t.dueDate}','${(t.notes||'').replace(/'/g,"\\'")}')">📅</button>`:''}
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        ${t.dueDate?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('${t.text.replace(/'/g,"\\'")}','${t.dueDate}','')">📅</button>`:''}
         <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="openTaskModal('${t.id}')">Edit</button>
         <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteTask('${t.id}')">✕</button>
       </div>
-    </div>`;
-  };
-
-  list.innerHTML = open_.map(taskRow).join('')
-    + (done_.length ? `<div class="section-label">Completed (${done_.length})</div>`+done_.map(taskRow).join('') : '');
+    </div>`;};
+  list.innerHTML=open_.map(tr).join('')+(done_.length?`<div class="section-label">Completed (${done_.length})</div>`+done_.map(tr).join(''):'');
 }
-
 function openTaskModal(id){
-  const t = id ? tasks.find(x=>x.id===id) : null;
-  document.getElementById('taskModalTitle').textContent = t ? 'Edit Task' : 'New Task';
-  document.getElementById('taskId').value   = t?.id||'';
-  document.getElementById('tText').value    = t?.text||'';
-  document.getElementById('tPriority').value= t?.priority||'Medium';
-  document.getElementById('tCat').value     = t?.cat||'Work';
-  document.getElementById('tDue').value     = t?.dueDate||'';
-  document.getElementById('tNotes').value   = t?.notes||'';
+  const t=id?tasks.find(x=>x.id===id):null;
+  document.getElementById('taskModalTitle').textContent=t?'Edit Task':'New Task';
+  document.getElementById('taskId').value=t?.id||'';document.getElementById('tText').value=t?.text||'';
+  document.getElementById('tPriority').value=t?.priority||'Medium';document.getElementById('tCat').value=t?.cat||'Work';
+  document.getElementById('tDue').value=t?.dueDate||'';document.getElementById('tNotes').value=t?.notes||'';
   openModal('taskModal');
 }
-
 function saveTask(){
-  const text = document.getElementById('tText').value.trim();
-  if(!text){ showToast('Task description required.', false); return; }
-  const id = document.getElementById('taskId').value || uid();
-  const obj = { id, text, priority:document.getElementById('tPriority').value,
-    cat:document.getElementById('tCat').value, dueDate:document.getElementById('tDue').value,
-    notes:document.getElementById('tNotes').value, done:false, createdAt:new Date().toISOString() };
-  const idx = tasks.findIndex(t=>t.id===id);
-  if(idx>=0){ obj.done=tasks[idx].done; tasks[idx]=obj; } else tasks.push(obj);
-  save(); closeModal('taskModal'); renderTasks();
+  const text=document.getElementById('tText').value.trim();if(!text){showToast('Task required.',false);return;}
+  const id=document.getElementById('taskId').value||uid();
+  const obj={id,text,priority:document.getElementById('tPriority').value,cat:document.getElementById('tCat').value,dueDate:document.getElementById('tDue').value,notes:document.getElementById('tNotes').value,done:false};
+  const idx=tasks.findIndex(t=>t.id===id);if(idx>=0){obj.done=tasks[idx].done;tasks[idx]=obj;}else tasks.push(obj);
+  save();closeModal('taskModal');renderTasks();
 }
+function toggleTask(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();renderTasks();}}
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);save();renderTasks();}
 
-function toggleTask(id){ const t=tasks.find(x=>x.id===id); if(t){ t.done=!t.done; save(); renderTasks(); } }
-function deleteTask(id){ tasks=tasks.filter(t=>t.id!==id); save(); renderTasks(); }
-
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // MEALS
-// ═══════════════════════════════════════════════════════════════════
-function getWeekDates(){
-  const now = new Date();
-  const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay() + weekOffset*7);
-  return Array.from({length:7},(_,i)=>{ const d=new Date(start); d.setDate(start.getDate()+i); return d; });
-}
-
-function changeWeek(dir){
-  weekOffset = dir===0 ? 0 : weekOffset+dir;
-  renderMeals();
-}
-
+// ═══════════════════════════════════════
+function getWeekDates(){const now=new Date(),s=new Date(now);s.setDate(now.getDate()-now.getDay()+weekOffset*7);return Array.from({length:7},(_,i)=>{const d=new Date(s);d.setDate(s.getDate()+i);return d;});}
+function changeWeek(dir){weekOffset=dir===0?0:weekOffset+dir;renderMeals();}
 function renderMeals(){
-  const dates = getWeekDates();
-  const s=dates[0], e=dates[6];
-  document.getElementById('weekLabel').textContent =
-    s.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+e.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-
-  document.getElementById('mealGrid').innerHTML = dates.map(d=>{
-    const key = fmtDate(d);
-    const isToday = key===today;
-    const dayMeals = meals[key]||[];
-    const slotsHTML = MEAL_TYPES.map(type=>{
-      const entry = dayMeals.find(m=>m.type===type);
-      return `<div class="meal-slot">
-        <div class="meal-type-label">${type}</div>
-        ${entry
-          ? `<div class="meal-entry" onclick="openMealModal('${key}','${type}')">
-              <span>${entry.text}</span>
-              <span onclick="event.stopPropagation();deleteMeal('${key}','${type}')" style="color:var(--muted);font-size:10px;cursor:pointer">✕</span>
-            </div>`
-          : `<button class="meal-add" onclick="openMealModal('${key}','${type}')">+ add</button>`}
-      </div>`;
+  const dates=getWeekDates();const s=dates[0],e=dates[6];
+  document.getElementById('weekLabel').textContent=s.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' – '+e.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('mealGrid').innerHTML=dates.map(d=>{
+    const key=fmtDate(d),isToday=key===today,dm=meals[key]||[];
+    const slots=MEAL_TYPES.map(type=>{const entry=dm.find(m=>m.type===type);
+      return `<div class="meal-slot"><div class="meal-type-label">${type}</div>${entry?`<div class="meal-entry" onclick="openMealModal('${key}','${type}')"><span>${entry.text}</span><span onclick="event.stopPropagation();deleteMeal('${key}','${type}')" style="color:var(--muted);font-size:9px;cursor:pointer">✕</span></div>`:`<button class="meal-add" onclick="openMealModal('${key}','${type}')">+ add</button>`}</div>`;
     }).join('');
-    const mealSummary = dayMeals.map(m=>`${m.type}: ${m.text}`).join(', ');
-    return `<div class="meal-day${isToday?' today':''}">
-      <div class="meal-day-header">${DAYS[d.getDay()]} <span style="font-weight:300;font-size:11px">${d.getDate()}</span></div>
-      ${slotsHTML}
-      <button class="meal-sync" onclick="pushToGCal('Meal plan: ${d.toLocaleDateString('en-US',{weekday:'long'})}','${key}','${mealSummary.replace(/'/g,"\\'")}')" >📅 Sync day</button>
-    </div>`;
+    const sum=(meals[key]||[]).map(m=>`${m.type}: ${m.text}`).join(', ');
+    return `<div class="meal-day${isToday?' today':''}"><div class="meal-day-header">${DAYS[d.getDay()]} <span style="font-weight:300;font-size:10px">${d.getDate()}</span></div>${slots}<button class="meal-sync" onclick="pushToGCal('Meal plan: ${d.toLocaleDateString('en-US',{weekday:'long'})}','${key}','${sum.replace(/'/g,"\\'")}')">📅 Sync</button></div>`;
   }).join('');
 }
-
-function openMealModal(date, type){
-  document.getElementById('mealModalTitle').textContent = `${type} — ${date}`;
-  document.getElementById('mealDate').value = date;
-  document.getElementById('mealType').value = type;
-  const existing = (meals[date]||[]).find(m=>m.type===type);
-  document.getElementById('mealText').value = existing?.text||'';
-  openModal('mealModal');
-  setTimeout(()=>document.getElementById('mealText').focus(),100);
+function openMealModal(date,type){
+  document.getElementById('mealModalTitle').textContent=`${type} — ${date}`;
+  document.getElementById('mealDate').value=date;document.getElementById('mealType').value=type;
+  document.getElementById('mealText').value=(meals[date]||[]).find(m=>m.type===type)?.text||'';
+  openModal('mealModal');setTimeout(()=>document.getElementById('mealText').focus(),100);
 }
-
 function saveMeal(){
-  const date=document.getElementById('mealDate').value;
-  const type=document.getElementById('mealType').value;
-  const text=document.getElementById('mealText').value.trim();
-  if(!meals[date]) meals[date]=[];
-  meals[date]=meals[date].filter(m=>m.type!==type);
-  if(text) meals[date].push({type,text});
-  save(); closeModal('mealModal'); renderMeals();
+  const date=document.getElementById('mealDate').value,type=document.getElementById('mealType').value,text=document.getElementById('mealText').value.trim();
+  if(!meals[date])meals[date]=[];meals[date]=meals[date].filter(m=>m.type!==type);
+  if(text)meals[date].push({type,text});save();closeModal('mealModal');renderMeals();
 }
+function deleteMeal(date,type){if(meals[date])meals[date]=meals[date].filter(m=>m.type!==type);save();renderMeals();}
 
-function deleteMeal(date,type){
-  if(meals[date]) meals[date]=meals[date].filter(m=>m.type!==type);
-  save(); renderMeals();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// FAMILY CALENDAR
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════
 function renderCalendar(){
-  const sorted = [...events].sort((a,b)=>a.date.localeCompare(b.date));
-  const upcoming = sorted.filter(e=>e.date>=today);
-  const past = sorted.filter(e=>e.date<today).reverse();
-  const list = document.getElementById('calList');
-  if(!upcoming.length&&!past.length){ list.innerHTML=`<div class="empty"><div class="empty-icon">📅</div>No events yet — bills, appointments, school events — add them here!</div>`; return; }
-
-  const eventRow = e => {
-    const col = CAT_COLORS[e.cat]||'#8fa3b8';
-    const daysUntil = Math.ceil((new Date(e.date)-new Date())/(1000*60*60*24));
-    return `<div class="event-row" style="border-color:${col}33">
-      <div class="event-bar" style="background:${col}"></div>
+  const sorted=[...events].sort((a,b)=>a.date.localeCompare(b.date));
+  const upcoming=sorted.filter(e=>e.date>=today),past=sorted.filter(e=>e.date<today).reverse();
+  const list=document.getElementById('calList');
+  if(!upcoming.length&&!past.length){list.innerHTML=`<div class="empty"><div class="empty-icon">📅</div>No events yet.</div>`;return;}
+  const eRow=e=>{const col=CC[e.cat]||'#8fa3b8';const du=Math.ceil((new Date(e.date)-new Date())/(864e5));
+    return `<div class="event-row" style="border-color:${col}33"><div class="event-bar" style="background:${col}"></div>
       <div style="flex:1">
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span style="font-weight:500;font-size:14px">${e.title}</span>
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><span style="font-weight:500;font-size:13px">${e.title}</span>
           <span class="status-badge" style="background:${col}22;color:${col};border:1px solid ${col}44;font-size:10px">${e.cat}</span>
-          ${daysUntil>=0&&daysUntil<=7?`<span class="soon-badge">in ${daysUntil}d</span>`:''}
+          ${du>=0&&du<=7?`<span class="soon-badge">in ${du}d</span>`:''}
         </div>
-        <div class="card-meta">${e.date}${e.time?' at '+e.time:''}</div>
-        ${e.notes?`<div class="card-meta" style="font-style:italic">${e.notes}</div>`:''}
+        <div style="color:var(--muted);font-size:11px;margin-top:2px">${e.date}${e.time?' at '+e.time:''}</div>
+        ${e.notes?`<div style="color:var(--muted);font-size:11px;margin-top:2px;font-style:italic">${e.notes}</div>`:''}
       </div>
-      <div class="card-actions">
-        <button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('${e.title.replace(/'/g,"\\'")}','${e.date}','${(e.notes||'').replace(/'/g,"\\'")}')">📅 Sync</button>
+      <div style="display:flex;gap:5px">
+        <button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('${e.title.replace(/'/g,"\\'")}','${e.date}','${(e.notes||'').replace(/'/g,"\\'")}')">📅</button>
         <button class="btn-sm" style="background:#c8540a18;color:var(--orange);border-color:#c8540a44" onclick="openEventModal('${e.id}')">Edit</button>
         <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteEvent('${e.id}')">✕</button>
       </div>
-    </div>`;
-  };
-
-  list.innerHTML =
-    (upcoming.length?`<div class="section-label">Upcoming</div>`+upcoming.map(eventRow).join(''):'')
-    +(past.length?`<div class="section-label">Past</div><div style="opacity:.5">`+past.map(eventRow).join('')+'</div>':'');
+    </div>`;};
+  list.innerHTML=(upcoming.length?`<div class="section-label">Upcoming</div>`+upcoming.map(eRow).join(''):'')+(past.length?`<div class="section-label">Past</div><div style="opacity:.5">`+past.map(eRow).join('')+'</div>':'');
 }
-
 function openEventModal(id){
-  const e = id ? events.find(x=>x.id===id) : null;
-  document.getElementById('eventModalTitle').textContent = e ? 'Edit Event' : 'New Event';
-  document.getElementById('eventId').value  = e?.id||'';
-  document.getElementById('eTitle').value   = e?.title||'';
-  document.getElementById('eDate').value    = e?.date||'';
-  document.getElementById('eTime').value    = e?.time||'';
-  document.getElementById('eCat').value     = e?.cat||'Family';
-  document.getElementById('eNotes').value   = e?.notes||'';
+  const e=id?events.find(x=>x.id===id):null;
+  document.getElementById('eventModalTitle').textContent=e?'Edit Event':'New Event';
+  document.getElementById('eventId').value=e?.id||'';document.getElementById('eTitle').value=e?.title||'';
+  document.getElementById('eDate').value=e?.date||'';document.getElementById('eTime').value=e?.time||'';
+  document.getElementById('eCat').value=e?.cat||'Family';document.getElementById('eNotes').value=e?.notes||'';
   openModal('eventModal');
 }
-
 function saveEvent(){
-  const title=document.getElementById('eTitle').value.trim();
-  const date=document.getElementById('eDate').value;
-  if(!title||!date){ showToast('Title and date are required.', false); return; }
+  const title=document.getElementById('eTitle').value.trim(),date=document.getElementById('eDate').value;
+  if(!title||!date){showToast('Title and date required.',false);return;}
   const id=document.getElementById('eventId').value||uid();
   const obj={id,title,date,time:document.getElementById('eTime').value,cat:document.getElementById('eCat').value,notes:document.getElementById('eNotes').value};
-  const idx=events.findIndex(e=>e.id===id);
-  if(idx>=0) events[idx]=obj; else events.push(obj);
-  save(); closeModal('eventModal'); renderCalendar();
+  const idx=events.findIndex(e=>e.id===id);if(idx>=0)events[idx]=obj;else events.push(obj);
+  save();closeModal('eventModal');renderCalendar();
+}
+function deleteEvent(id){events=events.filter(e=>e.id!==id);save();renderCalendar();}
+
+// ═══════════════════════════════════════
+// SCHOOL (Chloe)
+// ═══════════════════════════════════════
+function renderSchool(){
+  const PRIO_COL={High:'#b03a2e',Medium:'#c8540a',Low:'#8fa3b8'};
+  const bar=document.getElementById('schoolFilters');
+  const open_=school.filter(s=>!s.done),done_=school.filter(s=>s.done);
+  bar.innerHTML=`<div style="color:var(--purple);font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">🎓 Chloe's Schoolwork <span style="background:#6b4fa022;color:var(--purple);border:1px solid #6b4fa044;border-radius:99px;padding:1px 8px;font-size:10px">${open_.length} open</span></div>
+    <div class="spacer"></div>
+    <button style="background:var(--purple);color:#fff;border:none;border-radius:8px;padding:7px 15px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px" onclick="openSchoolModal()">+ Add Assignment</button>`;
+  const list=document.getElementById('schoolList');
+  if(!open_.length&&!done_.length){list.innerHTML=`<div class="empty"><div class="empty-icon">🎓</div>No assignments yet — add one above!</div>`;return;}
+  const sRow=s=>{
+    const pc=PRIO_COL[s.priority]||'#8fa3b8';
+    const daysUntil=s.due?Math.ceil((new Date(s.due)-new Date())/(864e5)):null;
+    const overdue=daysUntil!==null&&daysUntil<0&&!s.done;
+    const dueSoon=daysUntil!==null&&daysUntil<=2&&daysUntil>=0&&!s.done;
+    return `<div class="school-card" style="opacity:${s.done?.5:1}">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <button class="check-circle${s.done?' done':''}" onclick="toggleSchool('${s.id}')" style="margin-top:1px;flex-shrink:0">${s.done?'✓':''}</button>
+        <div style="flex:1">
+          <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
+            <span style="font-weight:600;font-size:13px;text-decoration:${s.done?'line-through':'none'};color:${s.done?'var(--muted)':'var(--white)'}">${s.title}</span>
+            <span class="school-chip">${s.type}</span>
+            <span style="background:${pc}22;color:${pc};font-size:10px;font-weight:700;border-radius:99px;padding:1px 7px">${s.priority}</span>
+            ${s.class?`<span class="tag">${s.class}</span>`:''}
+          </div>
+          ${s.due?`<div style="font-size:11px;color:${overdue?'var(--red)':dueSoon?'var(--yellow)':'var(--muted)'}">
+            ${overdue?'⚠ Overdue — ':dueSoon?'⚡ Due soon — ':'Due: '}${s.due}${daysUntil!==null&&!s.done?` (${overdue?Math.abs(daysUntil)+'d ago':daysUntil===0?'today':daysUntil+'d away'})`:''}
+          </div>`:''}
+          ${s.notes?`<div style="font-size:12px;color:var(--muted);margin-top:4px;font-style:italic">${s.notes}</div>`:''}
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          ${s.due&&!s.done?`<button class="btn-sm" style="background:#c8a96e18;color:var(--gold);border-color:#c8a96e44" onclick="pushToGCal('📚 ${s.title.replace(/'/g,"\\'")}','${s.due}','${s.class||''}')">📅</button>`:''}
+          <button class="btn-sm" style="background:#6b4fa018;color:var(--purple);border-color:#6b4fa044" onclick="openSchoolModal('${s.id}')">Edit</button>
+          <button class="btn-sm" style="background:#8fa3b818;color:var(--muted);border-color:#8fa3b844" onclick="deleteSchool('${s.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  };
+  list.innerHTML=open_.sort((a,b)=>{
+    // Sort: overdue first, then by due date, then no due date
+    if(!a.due&&!b.due) return 0;
+    if(!a.due) return 1;if(!b.due) return -1;
+    return a.due.localeCompare(b.due);
+  }).map(sRow).join('')+(done_.length?`<div class="section-label">Completed (${done_.length})</div>`+done_.map(sRow).join(''):'');
 }
 
-function deleteEvent(id){ events=events.filter(e=>e.id!==id); save(); renderCalendar(); }
+function openSchoolModal(id){
+  const s=id?school.find(x=>x.id===id):null;
+  document.getElementById('schoolModalTitle').textContent=s?'Edit Assignment':'New Assignment';
+  document.getElementById('schoolId').value=s?.id||'';
+  document.getElementById('sTitle').value=s?.title||'';
+  document.getElementById('sClass').value=s?.class||'';
+  document.getElementById('sType').value=s?.type||'Assignment';
+  document.getElementById('sDue').value=s?.due||'';
+  document.getElementById('sPriority').value=s?.priority||'Medium';
+  document.getElementById('sNotes').value=s?.notes||'';
+  openModal('schoolModal');
+}
+function saveSchool(){
+  const title=document.getElementById('sTitle').value.trim();if(!title){showToast('Title required.',false);return;}
+  const id=document.getElementById('schoolId').value||uid();
+  const obj={id,title,class:document.getElementById('sClass').value,type:document.getElementById('sType').value,
+    due:document.getElementById('sDue').value,priority:document.getElementById('sPriority').value,
+    notes:document.getElementById('sNotes').value,done:false};
+  const idx=school.findIndex(s=>s.id===id);
+  if(idx>=0){obj.done=school[idx].done;school[idx]=obj;}else school.push(obj);
+  save();closeModal('schoolModal');renderSchool();showToast('Assignment saved!');
+}
+function toggleSchool(id){const s=school.find(x=>x.id===id);if(s){s.done=!s.done;save();renderSchool();}}
+function deleteSchool(id){school=school.filter(s=>s.id!==id);save();renderSchool();}
 
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════
 renderCases();
 renderMeals();
 </script>
