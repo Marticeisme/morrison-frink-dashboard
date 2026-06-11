@@ -149,6 +149,9 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
 @media(max-width:700px){.meal-grid{grid-template-columns:repeat(2,1fr)}.field-row{grid-template-columns:1fr}header{gap:6px}.nav-btn{padding:5px 8px;font-size:11px}main{padding:12px}}
 @media(max-width:400px){.meal-grid{grid-template-columns:1fr}}
 </style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 <div id="toast"></div>
@@ -169,6 +172,7 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
     <button class="user-btn" id="btnChloe" onclick="setUser('chloe')">Chloe</button>
     <button class="user-btn" id="btnAll" onclick="setUser('all')">All Cases</button>
   </div>
+  <span id="syncStatus" style="font-size:10px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:4px"><span id="syncDot" style="width:7px;height:7px;border-radius:99px;background:var(--muted);display:inline-block"></span><span id="syncText">Connecting…</span></span>
   <button class="gcal-btn" id="gcalBtn" onclick="signInGoogle()">Connect Google Cal</button>
 </header>
 
@@ -240,10 +244,11 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
     <div style="margin-bottom:11px;color:var(--muted);font-size:12px" id="ws2Owner"></div>
     <div id="marticeTypes">
       <label style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px">Case Type</label>
-      <button class="disp-btn" onclick="selectDisp('Cemetery Cremation')">⚱️ Cemetery Cremation<div class="disp-sub">Cremation with cemetery property/niche</div></button>
-      <button class="disp-btn" onclick="selectDisp('Cemetery Casket')">⚰️ Cemetery Casket / Burial<div class="disp-sub">Casket burial on cemetery property</div></button>
-      <button class="disp-btn" onclick="selectDisp('Pre-Need Funeral')">📋 Pre-Need Funeral<div class="disp-sub">Funeral pre-arrangement contract</div></button>
-      <button class="disp-btn" onclick="selectDisp('Pre-Need Cemetery')">📋 Pre-Need Cemetery<div class="disp-sub">Cemetery property pre-arrangement</div></button>
+      <button class="disp-btn" onclick="selectDisp('RIC')">📄 RIC<div class="disp-sub">Retail Installment Contract — Pre-Need Cemetery</div></button>
+      <button class="disp-btn" onclick="selectDisp('CIRGAS')">📄 CIRGAS<div class="disp-sub">Cemetery Interment Rights, Goods & Services — At-Need</div></button>
+      <button class="disp-btn" onclick="selectDisp('GA Policy')">📋 GA / Forethought Policy<div class="disp-sub">Pre-Need Funeral insurance</div></button>
+      <button class="disp-btn" onclick="selectDisp('Clearpoint Trust')">📋 Clearpoint Trust<div class="disp-sub">Pre-Need Funeral trust</div></button>
+      <button class="disp-btn" onclick="selectDisp('Work Order')">🔧 Work Order<div class="disp-sub">Cemetery work order request</div></button>
     </div>
     <div id="chloeDisp" style="display:none">
       <label style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:7px">Disposition</label>
@@ -259,18 +264,32 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
     <div id="serviceTypeList"></div>
     <button class="btn-secondary" onclick="goStep(2)" style="margin-top:6px">← Back</button>
   </div>
+  <!-- Step 3b: Checklist picker (Martice confirmed sales) -->
+  <div class="wizard-step" id="ws3b">
+    <div style="margin-bottom:6px;color:var(--gold);font-size:13px;font-weight:600">Select Applicable Checklist Items</div>
+    <div style="margin-bottom:12px;color:var(--muted);font-size:11px">Check the items that apply to this case. Only selected items load, so your progress bar stays accurate. You can add more later.</div>
+    <div id="checklistPicker" style="max-height:50vh;overflow-y:auto;padding-right:4px"></div>
+    <div style="display:flex;gap:9px;justify-content:space-between;margin-top:14px">
+      <button class="btn-secondary" onclick="goStep(3)">← Back</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-secondary" onclick="togglePickerAll(true)">Select All</button>
+        <button class="btn-secondary" onclick="togglePickerAll(false)">Clear All</button>
+        <button class="btn-primary" onclick="confirmChecklistPicker()">Continue →</button>
+      </div>
+    </div>
+  </div>
   <!-- Step 4: Form -->
   <div class="wizard-step" id="ws4">
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px" id="ws4Tags"></div>
     <input type="hidden" id="caseId"/>
-    <div class="field"><label>Decedent / Family Name *</label><input type="text" id="cDecedent" placeholder="e.g. Morris, Victoris"/></div>
+    <div class="field"><label id="lblDecedent">Decedent / Family Name *</label><input type="text" id="cDecedent" placeholder="e.g. Morris, Victoris"/></div>
     <div class="field-row">
-      <div class="field"><label>Metal Disc #</label><input type="text" id="cDisc" placeholder="27694"/></div>
-      <div class="field"><label>Passare Case #</label><input type="text" id="cPassare" placeholder="WM-2026-0219"/></div>
+      <div class="field" id="fldDisc"><label id="lblDisc">Metal Disc #</label><input type="text" id="cDisc" placeholder="27694"/></div>
+      <div class="field"><label id="lblPassare">Passare Case #</label><input type="text" id="cPassare" placeholder="WM-2026-0219"/></div>
     </div>
-    <div class="field"><label>Passare Link</label><input type="text" id="cPassareLink" placeholder="https://app.passare.com/..."/></div>
+    <div class="field" id="fldPassareLink"><label id="lblPassareLink">Passare Link</label><input type="text" id="cPassareLink" placeholder="https://app.passare.com/..."/></div>
     <div class="field-row">
-      <div class="field"><label>Service Date</label><input type="date" id="cServiceDate"/></div>
+      <div class="field"><label id="lblServiceDate">Service Date</label><input type="date" id="cServiceDate"/></div>
       <div class="field"><label>Service Time</label><input type="time" id="cServiceTime"/></div>
     </div>
     <div class="field"><label>Status</label>
@@ -318,6 +337,24 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
           <option>Waiting for Family Payment</option><option>Pending DocuSign</option>
           <option>Payment Plan Active</option><option>Payment Received</option><option>Payment Complete</option>
         </select>
+      </div>
+      <div class="field"><label>Family Follow-Up Reminder (days)</label>
+        <input type="number" id="mReminderDays" min="1" max="30" value="4" placeholder="4"/>
+        <div style="color:var(--muted);font-size:10px;margin-top:3px">How often to be reminded to follow up with this family. Adjust per family — defaults to 4 days.</div>
+      </div>
+    </div>
+    <!-- Martice QUOTE section (RIC/CIRGAS quotes) -->
+    <div id="marticeQuoteSection" style="display:none">
+      <div class="divider"></div>
+      <div style="color:var(--muted);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">What's Being Quoted</div>
+      <div style="color:var(--muted);font-size:11px;margin-bottom:10px">Check all that apply — saved so you know exactly what was quoted.</div>
+      <div id="quoteCategories" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
+      <div class="field" id="fldIntermentDate" style="margin-top:14px;display:none"><label>Interment Date (if family has one in mind)</label><input type="date" id="cIntermentDate"/>
+        <div style="color:var(--muted);font-size:10px;margin-top:3px">Optional — tentative date the family mentioned, even if not yet confirmed.</div>
+      </div>
+      <div class="field" style="margin-top:14px"><label>Estimated Quote Total (optional)</label>
+        <input type="text" id="cQuoteEstimate" placeholder="e.g. $8,500"/>
+        <div style="color:var(--muted);font-size:10px;margin-top:3px">A ballpark figure to point to — not an exact contract price.</div>
       </div>
     </div>
     <div class="divider"></div>
@@ -442,6 +479,7 @@ let school  = JSON.parse(localStorage.getItem('bw:school')||'[]');
 let expandedCards = JSON.parse(localStorage.getItem('bw:expanded')||'{}');
 let gToken=null,weekOffset=0,caseFilter='All',taskFilter='All',activeUser='martice';
 let wOwner='',wDisp='',wServiceType='';
+let wPickedChecklist=null; // Martice confirmed-sale chosen items {group:[texts]}
 
 const CASE_STATUSES=['New','In Progress','Pending Family','Pending Docs','Pending Payment','Complete'];
 const SC={New:'#c8540a','In Progress':'#c8a96e','Pending Family':'#b8860b','Pending Docs':'#8fa3b8','Pending Payment':'#6b4fa0',Complete:'#2e7d57'};
@@ -453,6 +491,9 @@ const today=new Date().toISOString().slice(0,10);
 
 const REMINDER_DAYS={'AOC / Direct Cremation':4,'Traditional Service':2,'Viewing & Service':2,'Memorial Service':3,'I.D. Viewing':3,'Graveside Service':3,'Traditional Burial Service':2,'Direct Burial / No Service':3};
 const getRDays=st=>REMINDER_DAYS[st]||4;
+
+// Cemetery quote categories for RIC/CIRGAS quotes
+const QUOTE_CATEGORIES=['Property — Garden / Lawn Space','Property — Niche','Property — Mausoleum Crypt','Second / Third Right','Opening & Closing','Vault + Setting','Marker — Granite','Marker — Bronze','Foundation / Install','Inscription','Portrait / Emblem','Scattering Package'];
 
 const CHLOE_CHECKLISTS={
   Cremation:{
@@ -469,21 +510,130 @@ const CHLOE_CHECKLISTS={
     'Contract / Payment':['PN Research Complete','PN>AN Worksheet Complete/Uploaded','Claim Forms Signed/Uploaded','Contract Signed/Uploaded','Contract Signed in Passare','PIF or Insurance Verification','Payment Options Uploaded','Receipt(s) Uploaded']
   }
 };
+// Martice checklists keyed by "Type::Mode" (Confirmed Sale or Quote). Work Order is standalone.
 const MARTICE_CHECKLISTS={
-  'Cemetery Cremation':{'Property & Placement':['Property Confirmed/Located','Space Assignment Confirmed','Opening & Closing Scheduled','Inurnment Date/Time Set'],Products:['Urn Ordered','Urn Received','Niche Front / Vase Ordered','Memorial Merchandise Request Form Submitted'],Documentation:['Contract Signed','DocuSign Completed','ECF Collected','Recording Fee Collected','Passare Updated'],'Family Follow-Up':['Initial Contact Made','Payment Received/Arranged','Follow-Up Call (4 days)','Thank You / Aftercare Sent']},
-  'Cemetery Casket':{'Property & Placement':['Property Confirmed/Located','Space Assignment Confirmed','Opening & Closing Scheduled','Burial Date/Time Set','Vault Ordered/Confirmed'],Products:['Casket Ordered','Flowers Ordered/Confirmed','Memorial Merchandise Request Form Submitted'],Documentation:['Contract Signed','DocuSign Completed','ECF Collected','Recording Fee Collected','Deed Issued','Passare Updated'],'Family Follow-Up':['Initial Contact Made','Payment Received/Arranged','Follow-Up Call (4 days)','Thank You / Aftercare Sent']},
-  'Pre-Need Funeral':{Contract:['Pre-Need Contract Completed','Global Atlantic / Forethought Filed','Contract Signed','DocuSign Completed','Policy # Obtained'],'Products & Services':['Casket / Merchandise Selected','Service Type Confirmed','Funeral Home Notified'],'Follow-Up':['Initial Contact Made','Follow-Up Call (4 days)','Annual Review Scheduled']},
-  'Pre-Need Cemetery':{Property:['Property Selected','Space Assignment Confirmed','Deed Issued'],Contract:['Contract Signed','DocuSign Completed','ECF Collected','Recording Fee Collected','Payment Plan Set Up'],'Follow-Up':['Initial Contact Made','Follow-Up Call (4 days)','Annual Review Scheduled']}
+  'RIC::Confirmed Sale':{
+    'Commission Packet':['Commission Worksheet','RIC Contract (terms & conditions, letter size)','Electronic Document Disclosure & Consent','Copy of Payment','Memorial Order Form','Cemetery Rules & Regulations','CRM Printout','Prices Confirmed By Admin'],
+    'New Property (if applicable)':['Phoenix Property Printout','Chaindex Copy','Affidavit of Heirs'],
+    'Submission':['RIC Documents to Cemetery Office','Property Designation Recorded','Date Submitted to Sales & Mktg Admin'],
+    'Follow-Up':['Marker / Memorial Follow-Up','Family Thank You / Aftercare']
+  },
+  'RIC::Quote':{
+    'Quote Prep':['Property Confirmed/Located','Pricing Confirmed','RIC Quote Prepared','Quote Sent to Family'],
+    'Family Follow-Up':['Initial Contact Made','Follow-Up Call','Second Follow-Up','Decision Check-In']
+  },
+  'CIRGAS::Confirmed Sale':{
+    'Commission Packet':['Commission Worksheet','CIRGAS Contract (terms & conditions, letter size)','Electronic Document Disclosure & Consent','Copy of Payment','Confirmation of Balance Owing (Cemetery Office)','Copy of IOA','Memorial Order Form','Cemetery Rules & Regulations','CRM Printout','Prices Confirmed By Admin'],
+    'New Property (if applicable)':['Phoenix Property Printout','Chaindex Copy','Affidavit of Heirs'],
+    'Submission':['Gave Appropriate Copies to Cemetery Office','Property Designation Recorded'],
+    'Follow-Up':['Marker / Memorial Follow-Up','Family Thank You / Aftercare']
+  },
+  'CIRGAS::Quote':{
+    'Quote Prep':['Property Confirmed/Located','Balance Owing Confirmed','Pricing Confirmed','CIRGAS Quote Prepared','Quote Sent to Family'],
+    'Family Follow-Up':['Initial Contact Made','Follow-Up Call','Second Follow-Up','Decision Check-In']
+  },
+  'GA Policy::Confirmed Sale':{
+    'Commission Packet':['Commission Worksheet','GA Insurance Policy Documents','Electronic Document Disclosure & Consent','Copy of Payment','CRM Printout','Prices Confirmed By Admin'],
+    'Payment Method':['Check Payable to Global Atlantic','GA Credit Card Form + Sec.4 Box Checked','Bank Withdrawal — Section 9 Completed'],
+    'If Applicable':['Cremation Authorization','Power of Attorney','Funeral Package Name in Notes (Required Purchase)'],
+    'Follow-Up':['Policy # Obtained','Family Follow-Up Call']
+  },
+  'GA Policy::Quote':{
+    'Quote Prep':['Needs Assessment Complete','GA Rate Estimate Prepared','Plan Options Presented','Quote Sent to Family'],
+    'Family Follow-Up':['Initial Contact Made','Follow-Up Call','Second Follow-Up','Decision Check-In']
+  },
+  'Clearpoint Trust::Confirmed Sale':{
+    'Commission Packet':['Commission Worksheet','Reason for Trust vs GA Policy Documented','Clearpoint Trust Documents','Non-Guaranteed Box Checked','Electronic Document Disclosure & Consent','Copy of Payment','CRM Printout','Prices Confirmed By Admin'],
+    'Payment Proof':['Imminent? Check Payable to BW / Gravity CC','Cash? Copy of BW Receipt','Check/CC — Copy of Check or Receipt'],
+    'If Applicable':['Cremation Authorization','Power of Attorney'],
+    'Follow-Up':['Family Follow-Up Call']
+  },
+  'Clearpoint Trust::Quote':{
+    'Quote Prep':['Needs Assessment Complete','Trust Estimate Prepared','Plan Options Presented','Quote Sent to Family'],
+    'Family Follow-Up':['Initial Contact Made','Follow-Up Call','Second Follow-Up','Decision Check-In']
+  },
+  'Work Order':{
+    'Request Intake':['Work Order Received','Deceased / Property Info Confirmed','Property Location Located','Account/Policy # Verified'],
+    'Fulfillment':['Work Scheduled','Work In Progress','Work Completed'],
+    'Follow-Up':['Family Notified of Completion','Photo / Confirmation Sent']
+  }
 };
 
 function uid(){return Math.random().toString(36).slice(2,10);}
+
+// ═══════════════════════════════════════
+// FIREBASE SYNC
+// ═══════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyB8y_4mgutskY8W4rJao9HHoAGdBkAumzM",
+  authDomain: "morrison-frink-dashboard.firebaseapp.com",
+  databaseURL: "https://morrison-frink-dashboard-default-rtdb.firebaseio.com",
+  projectId: "morrison-frink-dashboard",
+  storageBucket: "morrison-frink-dashboard.firebasestorage.app",
+  messagingSenderId: "320594168773",
+  appId: "1:320594168773:web:5b2535e83d7fc5b13459ac"
+};
+let fbDB=null, fbReady=false, fbWriting=false, suppressNextSync=false;
+function setSyncStatus(state){
+  const dot=document.getElementById('syncDot'), txt=document.getElementById('syncText');
+  if(!dot)return;
+  if(state==='synced'){dot.style.background='#2e7d57';txt.textContent='Synced';txt.style.color='#2e7d57';}
+  else if(state==='saving'){dot.style.background='#c8a96e';txt.textContent='Saving…';txt.style.color='#c8a96e';}
+  else if(state==='offline'){dot.style.background='#b03a2e';txt.textContent='Offline (local only)';txt.style.color='#b03a2e';}
+  else {dot.style.background='#8fa3b8';txt.textContent='Connecting…';txt.style.color='#8fa3b8';}
+}
+function initFirebase(){
+  try{
+    firebase.initializeApp(firebaseConfig);
+    fbDB=firebase.database();
+    // Listen for remote changes
+    fbDB.ref('dashboard').on('value', snap=>{
+      const data=snap.val();
+      if(!data){ fbReady=true; setSyncStatus('synced'); return; }
+      if(fbWriting){ return; } // ignore our own write echo
+      // Merge incoming data
+      cases  = data.cases  || cases;
+      tasks  = data.tasks  || tasks;
+      meals  = data.meals  || meals;
+      events = data.events || events;
+      school = data.school || school;
+      // Mirror to localStorage as backup
+      localStorage.setItem('bw:cases4',JSON.stringify(cases));
+      localStorage.setItem('bw:tasks',JSON.stringify(tasks));
+      localStorage.setItem('bw:meals',JSON.stringify(meals));
+      localStorage.setItem('bw:events',JSON.stringify(events));
+      localStorage.setItem('bw:school',JSON.stringify(school));
+      fbReady=true; setSyncStatus('synced');
+      // Re-render whatever tab is active
+      const active=document.querySelector('.panel.active');
+      if(active){
+        const id=active.id.replace('panel-','');
+        if(id==='cases')renderCases(); else if(id==='tasks')renderTasks();
+        else if(id==='meals')renderMeals(); else if(id==='calendar')renderCalendar();
+        else if(id==='school')renderSchool();
+      }
+    }, err=>{ console.warn('Firebase read error',err); setSyncStatus('offline'); fbReady=true; });
+  }catch(e){ console.warn('Firebase init failed',e); setSyncStatus('offline'); fbReady=true; }
+}
+function pushToFirebase(){
+  if(!fbDB){ return; }
+  fbWriting=true;
+  setSyncStatus('saving');
+  fbDB.ref('dashboard').set({cases,tasks,meals,events,school,updatedAt:Date.now(),_secret:'MorrisonFrink2026Secret'})
+    .then(()=>{ setSyncStatus('synced'); setTimeout(()=>{fbWriting=false;},300); })
+    .catch(e=>{ console.warn('Firebase write failed',e); setSyncStatus('offline'); fbWriting=false; });
+}
+
 function save(){
+  // Local backup always
   localStorage.setItem('bw:cases4',JSON.stringify(cases));
   localStorage.setItem('bw:tasks',JSON.stringify(tasks));
   localStorage.setItem('bw:meals',JSON.stringify(meals));
   localStorage.setItem('bw:events',JSON.stringify(events));
   localStorage.setItem('bw:school',JSON.stringify(school));
   localStorage.setItem('bw:expanded',JSON.stringify(expandedCards));
+  // Cloud sync
+  pushToFirebase();
 }
 function fmtDate(d){return d.toISOString().slice(0,10);}
 function showToast(msg,ok=true){const t=document.getElementById('toast');t.textContent=msg;t.className=ok?'':'error';t.style.display='block';setTimeout(()=>t.style.display='none',3200);}
@@ -549,31 +699,150 @@ function selectOwner(o){
 }
 function selectDisp(d){
   wDisp=d;
-  if(wOwner==='martice'){wServiceType='';populateCaseForm();goStep(4);}
-  else{
+  if(wOwner==='martice'){
+    if(d==='Work Order'){
+      // Work orders skip the quote/sale step
+      wServiceType='Work Order';
+      populateCaseForm();goStep(4);
+    } else {
+      // Show Quote vs Confirmed Sale choice
+      document.getElementById('ws3Disp').textContent='📄 '+d;
+      document.getElementById('serviceTypeList').innerHTML=
+        `<button class="disp-btn" onclick="selectServiceType('Confirmed Sale')">✅ Confirmed Sale<div class="disp-sub">Full commission packet checklist</div></button>
+         <button class="disp-btn" onclick="selectServiceType('Quote')">💬 Quote<div class="disp-sub">Quote prep + family follow-up steps</div></button>`;
+      goStep(3);
+    }
+  } else {
     document.getElementById('ws3Disp').textContent=(d==='Cremation'?'🔥':'⚰️')+' '+d;
     const types=d==='Cremation'?['AOC / Direct Cremation','Traditional Service','Memorial Service','I.D. Viewing','Viewing & Service']:['Traditional Burial Service','Graveside Service','Memorial Service','Direct Burial / No Service'];
     document.getElementById('serviceTypeList').innerHTML=types.map(st=>`<button class="disp-btn" onclick="selectServiceType('${st}')">${st}<div class="disp-sub">Contact reminder every ${getRDays(st)} days</div></button>`).join('');
     goStep(3);
   }
 }
-function selectServiceType(st){wServiceType=st;populateCaseForm();goStep(4);}
+function selectServiceType(st){
+  wServiceType=st;
+  wPickedChecklist=null;
+  // Martice confirmed sales → checklist picker step first
+  if(wOwner==='martice' && st==='Confirmed Sale' && wDisp!=='Work Order'){
+    renderChecklistPicker();
+    goStep('3b');
+  } else {
+    populateCaseForm();
+    goStep(4);
+  }
+}
+
+// ── Checklist picker for Martice confirmed sales ──
+function renderChecklistPicker(){
+  const key=wDisp+'::Confirmed Sale';
+  const tmpl=MARTICE_CHECKLISTS[key]||{};
+  const wrap=document.getElementById('checklistPicker');
+  wrap.innerHTML=Object.entries(tmpl).map(([group,items])=>{
+    return `<div style="margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;font-weight:600">${group}</div>
+      ${items.map(text=>`<label style="display:flex;align-items:center;gap:8px;background:#ffffff05;border-radius:7px;padding:6px 10px;margin-bottom:4px;cursor:pointer;font-size:12px">
+        <input type="checkbox" class="picker-item" data-group="${group.replace(/"/g,'&quot;')}" value="${text.replace(/"/g,'&quot;')}" checked style="width:15px;height:15px;accent-color:var(--orange);cursor:pointer"/>
+        <span>${text}</span>
+      </label>`).join('')}
+    </div>`;
+  }).join('');
+}
+function togglePickerAll(state){ document.querySelectorAll('.picker-item').forEach(c=>c.checked=state); }
+function confirmChecklistPicker(){
+  // Build picked checklist from checked items, preserving group order
+  const key=wDisp+'::Confirmed Sale';
+  const tmpl=MARTICE_CHECKLISTS[key]||{};
+  const picked={};
+  Object.keys(tmpl).forEach(group=>{
+    const items=Array.from(document.querySelectorAll(`.picker-item[data-group="${group.replace(/"/g,'&quot;')}"]:checked`)).map(c=>c.value);
+    if(items.length) picked[group]=items;
+  });
+  wPickedChecklist=picked;
+  populateCaseForm();
+  goStep(4);
+}
 
 function populateCaseForm(){
   const rDays=getRDays(wServiceType);
+  const modeLabel = wOwner==='martice' && wServiceType ? wServiceType : '';
   document.getElementById('ws4Tags').innerHTML=
     `<span class="${wOwner==='martice'?'owner-tag-martice':'owner-tag-chloe'}">${wOwner==='martice'?'Martice':'Chloe'}</span>
-     <span class="tag">${wDisp}</span>${wServiceType?`<span class="tag">${wServiceType}</span>`:''}
+     <span class="tag">${wDisp}</span>${modeLabel?`<span class="tag" style="${wServiceType==='Quote'?'background:#b8860b22;color:var(--yellow);border-color:#b8860b44':wServiceType==='Confirmed Sale'?'background:#2e7d5722;color:var(--green);border-color:#2e7d5744':''}">${modeLabel}</span>`:''}${wOwner==='chloe'&&wServiceType?`<span class="tag">${wServiceType}</span>`:''}
      ${wOwner==='chloe'&&wServiceType?`<span class="tag" style="background:#6b4fa022;color:var(--purple);border-color:#6b4fa044">📞 every ${rDays}d</span>`:''}`;
   document.getElementById('chloePaySection').style.display=wOwner==='chloe'?'block':'none';
-  document.getElementById('marticePaySection').style.display=wOwner==='martice'?'block':'none';
   ['cDecedent','cDisc','cPassare','cPassareLink','cServiceDate','cServiceTime','cNotes','cUrn','cCasket','cPayNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('cStatus').value='New';
   ['cPayment','cPayStatus','mPayment','mPayStatus'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const mr=document.getElementById('mReminderDays');if(mr)mr.value='4';
+  const qe=document.getElementById('cQuoteEstimate');if(qe)qe.value='';
+  const idt=document.getElementById('cIntermentDate');if(idt)idt.value='';
   document.getElementById('caseId').value='';
   document.getElementById('miscList').innerHTML='';
   document.getElementById('caseSaveBtn').style.background=wOwner==='chloe'?'var(--purple)':'var(--orange)';
+
+  // Determine if this is a Martice cemetery Quote (RIC or CIRGAS)
+  const isMarticeQuote = wOwner==='martice' && wServiceType==='Quote' && (wDisp==='RIC' || wDisp==='CIRGAS');
+  // Confirmed sale for cemetery contracts (RIC/CIRGAS) — location-only identifier, no payment method
+  const isCemeterySale = wOwner==='martice' && wServiceType==='Confirmed Sale' && (wDisp==='RIC' || wDisp==='CIRGAS');
+
+  // Show/hide sections
+  document.getElementById('marticePaySection').style.display=(wOwner==='martice' && !isMarticeQuote)?'block':'none';
+  document.getElementById('marticeQuoteSection').style.display=isMarticeQuote?'block':'none';
+  // Payment Method only shows for GA/Clearpoint sales, not cemetery sales
+  const mPayField=document.getElementById('mPayment')?.closest('.field');
+  if(mPayField) mPayField.style.display=isCemeterySale?'none':'';
+
+  // Relabel / hide fields based on owner & mode
+  if(wOwner==='martice'){
+    document.getElementById('lblDecedent').textContent='Purchaser / Family Name *';
+    document.getElementById('lblPassare').textContent='Property Location / Designation';
+    document.getElementById('cPassare').placeholder='e.g. Garden 23, Lot 4, Space B';
+    document.getElementById('fldPassareLink').style.display='none';
+    if(isMarticeQuote){
+      // Quotes: no contract #, no service/placement date row
+      document.getElementById('fldDisc').style.display='none';
+      document.getElementById('cServiceDate').closest('.field-row').style.display='none';
+      renderQuoteCategories([]);
+      document.getElementById('fldIntermentDate').style.display = wDisp==='CIRGAS' ? 'block' : 'none';
+    } else if(isCemeterySale){
+      // Cemetery confirmed sale: location IS the contract identifier — hide separate Contract # field
+      document.getElementById('fldDisc').style.display='none';
+      document.getElementById('cServiceDate').closest('.field-row').style.display='';
+      document.getElementById('lblServiceDate').textContent='Placement Date (if scheduled)';
+    } else {
+      // GA / Clearpoint / Work Order
+      document.getElementById('fldDisc').style.display='';
+      document.getElementById('cServiceDate').closest('.field-row').style.display='';
+      document.getElementById('lblDisc').textContent='Contract #';
+      document.getElementById('cDisc').placeholder='e.g. GA-2026-0142';
+      document.getElementById('lblServiceDate').textContent= wDisp==='Work Order' ? 'Requested Date' : 'Service / Placement Date';
+    }
+  } else {
+    document.getElementById('fldDisc').style.display='';
+    document.getElementById('cServiceDate').closest('.field-row').style.display='';
+    document.getElementById('lblDecedent').textContent='Decedent / Family Name *';
+    document.getElementById('lblDisc').textContent='Metal Disc #';
+    document.getElementById('cDisc').placeholder='27694';
+    document.getElementById('lblPassare').textContent='Passare Case #';
+    document.getElementById('cPassare').placeholder='WM-2026-0219';
+    document.getElementById('fldPassareLink').style.display='';
+    document.getElementById('lblServiceDate').textContent='Service Date';
+  }
 }
+
+// Render the quote category checkboxes, optionally pre-checking some
+function renderQuoteCategories(selected){
+  const wrap=document.getElementById('quoteCategories');
+  if(!wrap)return;
+  wrap.innerHTML=QUOTE_CATEGORIES.map((cat,i)=>{
+    const checked=selected.includes(cat)?'checked':'';
+    return `<label style="display:flex;align-items:center;gap:7px;background:#ffffff05;border-radius:7px;padding:7px 10px;cursor:pointer;font-size:12px">
+      <input type="checkbox" class="quote-cat" value="${cat}" ${checked} style="width:15px;height:15px;accent-color:var(--orange);cursor:pointer"/>
+      <span>${cat}</span>
+    </label>`;
+  }).join('');
+}
+function getQuoteCategories(){return Array.from(document.querySelectorAll('.quote-cat:checked')).map(c=>c.value);}
 
 function addMiscItem(val=''){
   const list=document.getElementById('miscList'),id='misc-'+uid(),div=document.createElement('div');
@@ -595,7 +864,7 @@ function quickStatus(caseId, val){
 // SAVE CASE
 // ═══════════════════════════════════════
 function openCaseModal(id){
-  wOwner='';wDisp='';wServiceType='';
+  wOwner='';wDisp='';wServiceType='';wPickedChecklist=null;
   if(id){
     const c=cases.find(x=>x.id===id);
     wOwner=c.owner;wDisp=c.disp;wServiceType=c.serviceType||'';
@@ -620,6 +889,14 @@ function openCaseModal(id){
     } else {
       const mp=document.getElementById('mPayment'),ms=document.getElementById('mPayStatus');
       if(mp)mp.value=c.payment||'';if(ms)ms.value=c.payStatus||'';
+      const mr=document.getElementById('mReminderDays');if(mr)mr.value=c.reminderDays||4;
+      // Restore quote data if this is a cemetery quote
+      const isMQuote = c.serviceType==='Quote' && (c.disp==='RIC'||c.disp==='CIRGAS');
+      if(isMQuote){
+        renderQuoteCategories(c.quoteCategories||[]);
+        const qe=document.getElementById('cQuoteEstimate');if(qe)qe.value=c.quoteEstimate||'';
+        const idt=document.getElementById('cIntermentDate');if(idt)idt.value=c.intermentDate||'';
+      }
     }
     document.getElementById('caseBackBtn').style.display='none';
     document.getElementById('caseModalTitle').textContent='Edit Case';
@@ -639,23 +916,45 @@ function saveCase(){
   const existing=cases.find(c=>c.id===id);
   let checklist=existing?.checklist||{};
   if(!existing){
-    const tmpl=wOwner==='chloe'?(CHLOE_CHECKLISTS[wDisp]||{}):(MARTICE_CHECKLISTS[wDisp]||{});
+    let tmpl;
+    if(wOwner==='chloe'){
+      tmpl=CHLOE_CHECKLISTS[wDisp]||{};
+    } else if(wPickedChecklist){
+      // Martice confirmed sale with hand-picked items
+      tmpl=wPickedChecklist;
+    } else {
+      // Martice: Work Order uses its own key; contracts use "Type::Mode"
+      const key = wDisp==='Work Order' ? 'Work Order' : (wDisp+'::'+wServiceType);
+      tmpl=MARTICE_CHECKLISTS[key]||{};
+    }
     Object.entries(tmpl).forEach(([g,items])=>{checklist[g]=items.map(text=>({text,done:false,na:false,doneAt:null}));});
     checklist['Misc']=[{text:'(Add misc items as needed)',done:false,na:false,doneAt:null}];
   }
   const isChloe=wOwner==='chloe';
+  // Reminder days: use custom field value if present, else default
+  let rDays = getRDays(wServiceType);
+  const customR = document.getElementById('mReminderDays');
+  if(!isChloe && customR && customR.value) rDays=parseInt(customR.value)||4;
+  const isMQuote = wOwner==='martice' && wServiceType==='Quote' && (wDisp==='RIC'||wDisp==='CIRGAS');
+  // For CIRGAS quote, interment date goes into serviceDate so it shows on card/calendar
+  let svcDate=document.getElementById('cServiceDate').value;
+  if(isMQuote && wDisp==='CIRGAS'){ svcDate=document.getElementById('cIntermentDate')?.value||''; }
+  if(isMQuote && wDisp==='RIC'){ svcDate=''; }
   const obj={id,owner:wOwner,disp:wDisp,serviceType:wServiceType,decedent,
     disc:document.getElementById('cDisc').value,passare:document.getElementById('cPassare').value,
-    passareLink:document.getElementById('cPassareLink').value,serviceDate:document.getElementById('cServiceDate').value,
+    passareLink:document.getElementById('cPassareLink').value,serviceDate:svcDate,
     serviceTime:document.getElementById('cServiceTime').value,status:document.getElementById('cStatus').value,
-    payment:isChloe?document.getElementById('cPayment').value:(document.getElementById('mPayment')?.value||''),
-    payStatus:isChloe?document.getElementById('cPayStatus').value:(document.getElementById('mPayStatus')?.value||''),
+    payment:isChloe?document.getElementById('cPayment').value:(isMQuote?'':(document.getElementById('mPayment')?.value||'')),
+    payStatus:isChloe?document.getElementById('cPayStatus').value:(isMQuote?'':(document.getElementById('mPayStatus')?.value||'')),
     payNotes:isChloe?document.getElementById('cPayNotes').value:'',
     notes:document.getElementById('cNotes').value,
     urn:isChloe?document.getElementById('cUrn').value:'',casket:isChloe?document.getElementById('cCasket').value:'',
+    quoteCategories:isMQuote?getQuoteCategories():[],
+    quoteEstimate:isMQuote?(document.getElementById('cQuoteEstimate')?.value||''):'',
+    intermentDate:isMQuote&&wDisp==='CIRGAS'?(document.getElementById('cIntermentDate')?.value||''):'',
     misc:getMiscItems(),checklist,touchpoints:existing?.touchpoints||[],
     createdAt:existing?.createdAt||new Date().toISOString(),lastContact:existing?.lastContact||null,
-    reminderDays:getRDays(wServiceType)};
+    reminderDays:rDays};
   const idx=cases.findIndex(c=>c.id===id);
   if(idx>=0)cases[idx]=obj;else cases.push(obj);
   save();closeModal('caseModal');renderCases();showToast('Case saved!');
@@ -808,6 +1107,36 @@ function buildCaseCardHTML(c){
       </div>`;
     }
   }
+  // Martice smart reminders — quotes especially need follow-up nudges
+  if(c.owner==='martice'){
+    const ageDays=Math.floor((Date.now()-new Date(c.createdAt))/(864e5));
+    const allItems=Object.values(c.checklist||{}).flat();
+    const isDone=text=>allItems.some(i=>i.text===text&&i.done);
+    const isNA=text=>allItems.some(i=>i.text===text&&i.na);
+    const alerts=[];
+    const rD=c.reminderDays||4;
+    const check=(text,threshold,msg,severity='error')=>{ if(!isNA(text)&&!isDone(text)&&ageDays>=threshold) alerts.push({msg,severity}); };
+    if(c.serviceType==='Quote'){
+      check('Quote Sent to Family',1,'Quote not yet sent — case is '+ageDays+'d old');
+      check('Follow-Up Call',rD,'Time to follow up with this family ('+ageDays+'d since quote opened)','warn');
+      check('Decision Check-In',rD*2,'No decision check-in yet — '+ageDays+'d since quote opened','warn');
+    } else if(c.serviceType==='Confirmed Sale'){
+      check('Copy of Payment',2,'Payment copy not collected — '+ageDays+'d since sale opened','warn');
+      check('Prices Confirmed By Admin',2,'Prices not yet confirmed by admin — '+ageDays+'d old','warn');
+      check('Marker / Memorial Follow-Up',5,'Marker/memorial follow-up pending — '+ageDays+'d since sale','warn');
+    } else if(c.disp==='Work Order'){
+      check('Work Completed',3,'Work order not completed — '+ageDays+'d since received','warn');
+      if(isDone('Work Completed')&&!isDone('Family Notified of Completion')&&!isNA('Family Notified of Completion')){
+        alerts.push({msg:'Work completed — family not yet notified',severity:'error'});
+      }
+    }
+    if(alerts.length){
+      smartAlertsHTML=`<div style="margin-bottom:12px">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:6px;font-weight:700">⚠ Smart Reminders</div>
+        ${alerts.map(a=>`<div class="smart-alert${a.severity==='warn'?' warn':''}">⚠ ${a.msg}</div>`).join('')}
+      </div>`;
+    }
+  }
   const rDays=c.reminderDays||4;
   let reminderHTML='';
   if(c.lastContact){
@@ -825,7 +1154,7 @@ function buildCaseCardHTML(c){
   const qs=`<select class="quick-status" onclick="event.stopPropagation()" onchange="quickStatus('${c.id}',this.value)">${qsOpts}</select>`;
 
   // Checklist HTML — NA-aware, editable (Chloe only)
-  const isChloeCase = c.owner==='chloe';
+  const isChloeCase = true; // Both Martice and Chloe get editable N/A checklists
   let checklistHTML='';
   Object.entries(c.checklist||{}).forEach(([group,items])=>{
     const groupKey=group.replace(/\W/g,'');
@@ -882,9 +1211,10 @@ function buildCaseCardHTML(c){
           ${qs}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          ${c.disc?`<span style="color:var(--muted);font-size:10px">Disc: ${c.disc}</span>`:''}
-          ${c.passare?`<span style="color:var(--muted);font-size:10px">Case: ${c.passare}</span>`:''}
+          ${c.disc?`<span style="color:var(--muted);font-size:10px">${c.owner==='martice'?'Contract':'Disc'}: ${c.disc}</span>`:''}
+          ${c.passare?`<span style="color:var(--muted);font-size:10px">${c.owner==='martice'?'📍':'Case:'} ${c.passare}</span>`:''}
           ${c.serviceDate?`<span style="color:var(--goldL);font-size:10px">📅 ${c.serviceDate}${c.serviceTime?' @ '+c.serviceTime:''}</span>`:''}
+          ${c.quoteEstimate?`<span style="color:var(--gold);font-size:11px;font-weight:600">~${c.quoteEstimate}</span>`:''}
           ${payHTML} ${reminderHTML}
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -900,6 +1230,12 @@ function buildCaseCardHTML(c){
     </div>
     <div class="case-card-body${isOpen?' open':''}" id="cbody-${c.id}">
       ${smartAlertsHTML}
+      ${c.quoteCategories&&c.quoteCategories.length?`<div style="padding:11px 0;border-bottom:1px solid #ffffff0a;margin-bottom:11px">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">What's Being Quoted</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">${c.quoteCategories.map(q=>`<span style="background:#c8540a18;color:var(--orange);border:1px solid #c8540a44;border-radius:99px;padding:2px 9px;font-size:11px">${q}</span>`).join('')}</div>
+        ${c.quoteEstimate?`<div style="margin-top:8px"><span style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Estimated Total</span> <span style="font-size:15px;color:var(--gold);font-weight:600;margin-left:6px">${c.quoteEstimate}</span></div>`:''}
+        ${c.intermentDate?`<div style="margin-top:4px;font-size:11px;color:var(--goldL)">Tentative interment: ${c.intermentDate}</div>`:''}
+      </div>`:''}
       ${c.urn||c.casket||c.payNotes?`<div style="display:flex;gap:18px;flex-wrap:wrap;padding:11px 0;border-bottom:1px solid #ffffff0a;margin-bottom:11px">
         ${c.payNotes?`<div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Payment Notes</div><div style="font-size:12px;margin-top:2px;color:var(--goldL)">${c.payNotes}</div></div>`:''}
         ${c.urn?`<div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Urn / Container</div><div style="font-size:12px;margin-top:2px">${c.urn}</div></div>`:''}
@@ -1191,6 +1527,7 @@ function deleteSchool(id){school=school.filter(s=>s.id!==id);save();renderSchool
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
+initFirebase();
 renderCases();
 renderMeals();
 </script>
