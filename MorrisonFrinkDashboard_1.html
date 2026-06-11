@@ -494,6 +494,7 @@ const getRDays=st=>REMINDER_DAYS[st]||4;
 
 // Cemetery quote categories for RIC/CIRGAS quotes
 const QUOTE_CATEGORIES=['Property — Garden / Lawn Space','Property — Niche','Property — Mausoleum Crypt','Second / Third Right','Opening & Closing','Vault + Setting','Marker — Granite','Marker — Bronze','Foundation / Install','Inscription','Portrait / Emblem','Scattering Package'];
+const FUNERAL_QUOTE_CATEGORIES=['Professional Services / Funeral Package','Casket Selection','Cremation Services','Urn / Alternative Container','Transportation / Transfer','Memorial Merchandise','Cash Advance Items'];
 
 const CHLOE_CHECKLISTS={
   Cremation:{
@@ -781,7 +782,7 @@ function populateCaseForm(){
   document.getElementById('caseSaveBtn').style.background=wOwner==='chloe'?'var(--purple)':'var(--orange)';
 
   // Determine if this is a Martice cemetery Quote (RIC or CIRGAS)
-  const isMarticeQuote = wOwner==='martice' && wServiceType==='Quote' && (wDisp==='RIC' || wDisp==='CIRGAS');
+  const isMarticeQuote = wOwner==='martice' && wServiceType==='Quote' && (wDisp==='RIC' || wDisp==='CIRGAS' || wDisp==='GA Policy' || wDisp==='Clearpoint Trust');
   // Confirmed sale for cemetery contracts (RIC/CIRGAS) — location-only identifier, no payment method
   const isCemeterySale = wOwner==='martice' && wServiceType==='Confirmed Sale' && (wDisp==='RIC' || wDisp==='CIRGAS');
 
@@ -802,7 +803,8 @@ function populateCaseForm(){
       // Quotes: no contract #, no service/placement date row
       document.getElementById('fldDisc').style.display='none';
       document.getElementById('cServiceDate').closest('.field-row').style.display='none';
-      renderQuoteCategories([]);
+      const qCats = (wDisp==='GA Policy'||wDisp==='Clearpoint Trust') ? FUNERAL_QUOTE_CATEGORIES : QUOTE_CATEGORIES;
+      renderQuoteCategories([], qCats);
       document.getElementById('fldIntermentDate').style.display = wDisp==='CIRGAS' ? 'block' : 'none';
     } else if(isCemeterySale){
       // Cemetery confirmed sale: location IS the contract identifier — hide separate Contract # field
@@ -831,10 +833,11 @@ function populateCaseForm(){
 }
 
 // Render the quote category checkboxes, optionally pre-checking some
-function renderQuoteCategories(selected){
+function renderQuoteCategories(selected, cats){
+  cats=cats||QUOTE_CATEGORIES;
   const wrap=document.getElementById('quoteCategories');
   if(!wrap)return;
-  wrap.innerHTML=QUOTE_CATEGORIES.map((cat,i)=>{
+  wrap.innerHTML=cats.map((cat,i)=>{
     const checked=selected.includes(cat)?'checked':'';
     return `<label style="display:flex;align-items:center;gap:7px;background:#ffffff05;border-radius:7px;padding:7px 10px;cursor:pointer;font-size:12px">
       <input type="checkbox" class="quote-cat" value="${cat}" ${checked} style="width:15px;height:15px;accent-color:var(--orange);cursor:pointer"/>
@@ -891,9 +894,10 @@ function openCaseModal(id){
       if(mp)mp.value=c.payment||'';if(ms)ms.value=c.payStatus||'';
       const mr=document.getElementById('mReminderDays');if(mr)mr.value=c.reminderDays||4;
       // Restore quote data if this is a cemetery quote
-      const isMQuote = c.serviceType==='Quote' && (c.disp==='RIC'||c.disp==='CIRGAS');
+      const isMQuote = c.serviceType==='Quote' && (c.disp==='RIC'||c.disp==='CIRGAS'||c.disp==='GA Policy'||c.disp==='Clearpoint Trust');
       if(isMQuote){
-        renderQuoteCategories(c.quoteCategories||[]);
+        const qCats2=(c.disp==='GA Policy'||c.disp==='Clearpoint Trust')?FUNERAL_QUOTE_CATEGORIES:QUOTE_CATEGORIES;
+        renderQuoteCategories(c.quoteCategories||[], qCats2);
         const qe=document.getElementById('cQuoteEstimate');if(qe)qe.value=c.quoteEstimate||'';
         const idt=document.getElementById('cIntermentDate');if(idt)idt.value=c.intermentDate||'';
       }
@@ -935,7 +939,7 @@ function saveCase(){
   let rDays = getRDays(wServiceType);
   const customR = document.getElementById('mReminderDays');
   if(!isChloe && customR && customR.value) rDays=parseInt(customR.value)||4;
-  const isMQuote = wOwner==='martice' && wServiceType==='Quote' && (wDisp==='RIC'||wDisp==='CIRGAS');
+  const isMQuote = wOwner==='martice' && wServiceType==='Quote' && (wDisp==='RIC'||wDisp==='CIRGAS'||wDisp==='GA Policy'||wDisp==='Clearpoint Trust');
   // For CIRGAS quote, interment date goes into serviceDate so it shows on card/calendar
   let svcDate=document.getElementById('cServiceDate').value;
   if(isMQuote && wDisp==='CIRGAS'){ svcDate=document.getElementById('cIntermentDate')?.value||''; }
